@@ -20,11 +20,20 @@ export default function HomeScreen({ navigation }) {
         style={styles.backgroundImage} 
       />
       <View style={styles.overlay}>
+        {/* Logo Image */}
+        <Image 
+          source={{ uri: 'https://i.pinimg.com/736x/15/00/17/15001709fcddb79a0e3a654d2b1934b7.jpg' }} 
+          style={styles.logo} 
+        />
         <View style={styles.inputContainer}>
           <Icon name="search" size={20} color="#555" style={styles.searchIcon} />
           <TextInput style={styles.input} placeholder="Search Restaurants" placeholderTextColor="#555" />
         </View>
-        <TouchableOpacity style={styles.button}>
+        {/* Book Table Button */}
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation.navigate('BookTable')} // Add navigation handler
+        >
           <Icon name="calendar" size={20} color="white" style={styles.calendarIcon} />
           <Text style={styles.buttonText}>Book Table</Text>
         </TouchableOpacity>
@@ -56,6 +65,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     alignItems: 'center',
     padding: 20,
+  },
+  logo: {
+    width: 100, // Adjust the width as needed
+    height: 100, // Adjust the height as needed
+    marginBottom: 20, // Add margin to position it above the search button
   },
   inputContainer: {
     flexDirection: 'row',
