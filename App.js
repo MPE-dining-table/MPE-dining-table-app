@@ -7,7 +7,6 @@ import SignupScreen from './components/SignupScreen';
 import LoginScreen from './components/LoginScreen';
 import ProfileScreen from './components/ProfileScreen';
 import FavoritesScreen from './components/FavoritesScreen';
-import BookTableScreen from './components/BookTableScreen'; // Import BookTableScreen
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faSearch, faUser, faHeart } from '@fortawesome/free-solid-svg-icons';
 
@@ -40,16 +39,13 @@ export default function App() {
   return (
     <NavigationContainer>
       <View style={{ flex: 1 }}>
-        {/* Stack Navigator */}
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Favorites" component={FavoritesScreen} />
-          <Stack.Screen name="BookTable" component={BookTableScreen} />
         </Stack.Navigator>
-
         {/* Global Footer */}
         <Footer />
       </View>

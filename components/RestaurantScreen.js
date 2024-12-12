@@ -16,7 +16,17 @@ import Carousel from 'react-native-snap-carousel';
 
 const RestaurantScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { restaurant } = route.params; // Get restaurant details from route params
+
+  // Add a fallback to avoid undefined errors
+  const { restaurant = {} } = route.params || {
+    restaurant: {
+      name: 'Unknown Restaurant',
+      location: 'No location provided',
+      phone: 'No phone available',
+      email: 'No email available',
+      description: 'No description available',
+    },
+  };
 
   const [modalVisible, setModalVisible] = useState(false);
   const [reviewText, setReviewText] = useState('');
@@ -29,6 +39,7 @@ const RestaurantScreen = ({ route }) => {
     'https://via.placeholder.com/600/d32776',
   ];
 
+  // Render a single carousel image
   const renderCarouselItem = ({ item }) => {
     return (
       <Image

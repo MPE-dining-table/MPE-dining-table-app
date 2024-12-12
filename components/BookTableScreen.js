@@ -25,18 +25,30 @@ const BookTableScreen = () => {
     navigation.navigate('RestaurantScreen', { restaurant });
   };
 
+  const handleImagePress = (restaurant) => {
+    console.log('Navigating to RestaurantScreen with:', restaurant); // Debugging
+    navigation.navigate('Restaurant', { restaurant });
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
-      <Image
-        source={{ uri: `https://via.placeholder.com/150?text=${item.name}` }}
-        style={styles.image}
-      />
+      {/* Wrap the Image in a TouchableOpacity for navigation */}
+      <TouchableOpacity onPress={() => handleImagePress(item)}>
+        <Image
+          source={{ uri: `https://via.placeholder.com/150?text=${item.name}` }}
+          style={styles.image}
+        />
+      </TouchableOpacity>
+
+      {/* Location Icon */}
       <TouchableOpacity
         style={styles.locationIcon}
         onPress={() => handleLocationPress(item.location)}
       >
         <Ionicons name="location-outline" size={24} color="blue" />
       </TouchableOpacity>
+
+      {/* Add Icon */}
       <TouchableOpacity
         style={styles.addIcon}
         onPress={() => handleAddPress(item)}
