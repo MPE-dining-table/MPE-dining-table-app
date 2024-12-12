@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, TouchableOpacity, SafeAreaView, Image, Text } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -13,8 +13,42 @@ import LoginScreen from './components/LoginScreen';
 import ProfileScreen from './components/ProfileScreen';
 import SignupScreen from './components/SignupScreen';
 import RestaurantScreen from './components/RestaurantScreen';
+import { height } from '@fortawesome/free-solid-svg-icons/fa0';
 
 const Stack = createStackNavigator();
+
+// Splash Screen Component
+const SplashScreen = () => {
+  return (
+    <View style={splashStyles.container}>
+      <Image
+        source={require('./assets/MPEnime.gif')} // Replace with your splash logo
+        style={splashStyles.logo}
+      />
+      {/* <Text style={splashStyles.text}>Welcome to MyApp</Text> */}
+    </View>
+  );
+};
+
+const splashStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+  },
+  logo: {
+    width: 400,
+    height: 400,
+    resizeMode: 'contain',
+  },
+  text: {
+    marginTop: 20,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+});
 
 // Footer component
 const Footer = ({ activeScreen }) => {
@@ -112,6 +146,19 @@ const ScreenLayout = ({ children }) => {
 
 // App component
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate a delay for the splash screen
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000); // 3 seconds
+  }, []);
+
+  if (isLoading) {
+    return <SplashScreen />;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -204,6 +251,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
   footerContainer: {
     backgroundColor: '#F5F5F5', // Light gray background
     paddingVertical: 10,
