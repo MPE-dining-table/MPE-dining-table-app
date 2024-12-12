@@ -69,7 +69,7 @@ const SearchScreen = () => {
           style={styles.locationIcon}
           onPress={() => handleLocationPress(item.location)}
         >
-          <Ionicons name="location-outline" size={24} color="blue" />
+          <Ionicons name="location-outline" size={24} color="#FF6347" />
         </TouchableOpacity>
         <Text style={styles.locationText}>{item.location}</Text>
       </View>
@@ -79,7 +79,7 @@ const SearchScreen = () => {
         style={styles.addIcon}
         onPress={() => handleAddPress(item)}
       >
-        <Ionicons name="add-circle-outline" size={24} color="green" />
+        <Ionicons name="add-circle-outline" size={24} color="#4CAF50" />
       </TouchableOpacity>
     </View>
   );
@@ -87,7 +87,7 @@ const SearchScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={24} color="gray" style={styles.searchIcon} />
+        <Ionicons name="search" size={24} color="#888" style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search for restaurants..."
@@ -108,42 +108,52 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F5F5F5', // Light gray background
     padding: 16,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    top: 10,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    paddingHorizontal: 16,
+    marginBottom: 20,
+    elevation: 5, // Shadow for Android
+    shadowColor: '#000', // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   searchIcon: {
     marginRight: 8,
   },
   searchInput: {
     flex: 1,
-    height: 40,
+    height: 50,
+    fontSize: 16,
+    color: '#333',
   },
   listContainer: {
     paddingBottom: 16,
   },
   imageContainer: {
     position: 'relative',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   image: {
     width: '100%',
     height: 200,
-    borderRadius: 8,
+    borderRadius: 10,
+    resizeMode: 'cover',
   },
   textContainer: {
     position: 'absolute',
-    top: 10,
-    left: 10,
+    top: 15,
+    left: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
   },
   restaurantName: {
     color: 'white',
@@ -152,13 +162,17 @@ const styles = StyleSheet.create({
   },
   locationContainer: {
     position: 'absolute',
-    bottom: 10,
-    left: 10,
+    bottom: 15,
+    left: 15,
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
   },
   locationText: {
-    color: 'darkred', // Dark red color for the location name
+    color: '#333', // Dark gray color for the location name
     fontSize: 16,
     marginLeft: 5,
   },
@@ -167,8 +181,16 @@ const styles = StyleSheet.create({
   },
   addIcon: {
     position: 'absolute',
-    bottom: 10,
-    right: 10,
+    bottom: 15,
+    right: 15,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 5,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
 });
 
