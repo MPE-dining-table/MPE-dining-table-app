@@ -8,8 +8,6 @@ import LoginScreen from './components/LoginScreen';
 import ProfileScreen from './components/ProfileScreen';
 import FavoritesScreen from './components/FavoritesScreen';
 import BookTableScreen from './components/BookTableScreen'; // Import BookTableScreen
-import RestaurantScreen from './components/RestaurantScreen'; // Import RestaurantScreen
-import SearchScreen from './components/SearchScreen'; // Import SearchScreen
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faSearch, faUser, faHeart } from '@fortawesome/free-solid-svg-icons';
 
@@ -50,8 +48,6 @@ export default function App() {
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Favorites" component={FavoritesScreen} />
           <Stack.Screen name="BookTable" component={BookTableScreen} />
-          <Stack.Screen name="Restaurant" component={RestaurantScreen} /> {/* Add RestaurantScreen */}
-          <Stack.Screen name="Search" component={SearchScreen} /> {/* Add SearchScreen */}
         </Stack.Navigator>
 
         {/* Global Footer */}
