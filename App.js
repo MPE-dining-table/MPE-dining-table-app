@@ -7,17 +7,19 @@ import SignupScreen from './components/SignupScreen';
 import LoginScreen from './components/LoginScreen';
 import ProfileScreen from './components/ProfileScreen';
 import FavoritesScreen from './components/FavoritesScreen';
+import RestaurantScreen from './components/RestaurantScreen';
+import BookTableScreen from './components/BookTableScreen';
+import SearchScreen from './components/SearchScreen';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faSearch, faUser, faHeart } from '@fortawesome/free-solid-svg-icons';
 
 const Stack = createStackNavigator();
 
-// Footer Component
-function Footer() {
-  const navigation = useNavigation(); // Use the useNavigation hook to get the navigation object
+const Footer = () => {
+  const navigation = useNavigation();
 
   return (
-    <View style={styles.footer}>
+    <View style={styles.footerContainer}>
       <TouchableOpacity onPress={() => navigation.navigate('Home')}>
         <FontAwesomeIcon icon={faHome} size={24} color="red" />
       </TouchableOpacity>
@@ -32,38 +34,50 @@ function Footer() {
       </TouchableOpacity>
     </View>
   );
-}
+};
 
-// Main App
-export default function App() {
+const App = () => {
   return (
     <NavigationContainer>
-      <View style={{ flex: 1 }}>
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <View style={styles.container}>
+        <Stack.Navigator 
+          initialRouteName="Home"
+          screenOptions={{
+            headerShown: false
+          }}
+        >
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Signup" component={SignupScreen} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Favorites" component={FavoritesScreen} />
+          <Stack.Screen name="Restaurant" component={RestaurantScreen} />
+          <Stack.Screen name="BookTable" component={BookTableScreen} />
+          <Stack.Screen name="Search" component={SearchScreen} />
         </Stack.Navigator>
-        {/* Global Footer */}
         <Footer />
       </View>
     </NavigationContainer>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  footer: {
+  container: {
+    flex: 1,
+  },
+  footerContainer: {
     position: 'absolute',
     bottom: 0,
-    width: '100%',
-    backgroundColor: '#F5DEB3', // Light brown
+    left: 0,
+    right: 0,
+    backgroundColor: '#F5DEB3',
     paddingVertical: 10,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: 1,
     borderColor: '#C0C0C0',
-  },
+  }
 });
+
+export default App;
