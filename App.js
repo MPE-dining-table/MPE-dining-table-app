@@ -7,6 +7,12 @@ import { faHome, faSearch, faUser, faHeart } from '@fortawesome/free-solid-svg-i
 import Svg, { Path } from 'react-native-svg';
 import HomeScreen from './components/HomeScreen';
 import SearchScreen from './components/SearchScreen';
+import BookTableScreen from './components/BookTableScreen';
+import FavoritesScreen from './components/FavoritesScreen';
+import LoginScreen from './components/LoginScreen';
+import ProfileScreen from './components/ProfileScreen';
+import SignupScreen from './components/SignupScreen';
+import RestaurantScreen from './components/RestaurantScreen';
 
 const Stack = createStackNavigator();
 
@@ -114,6 +120,7 @@ const App = () => {
           headerShown: false,
         }}
       >
+        {/* Home Screen */}
         <Stack.Screen name="Home">
           {(props) => (
             <ScreenLayout>
@@ -121,6 +128,8 @@ const App = () => {
             </ScreenLayout>
           )}
         </Stack.Screen>
+
+        {/* Signup Screen */}
         <Stack.Screen name="Signup">
           {(props) => (
             <ScreenLayout>
@@ -128,6 +137,8 @@ const App = () => {
             </ScreenLayout>
           )}
         </Stack.Screen>
+
+        {/* Login Screen */}
         <Stack.Screen name="Login">
           {(props) => (
             <ScreenLayout>
@@ -135,6 +146,8 @@ const App = () => {
             </ScreenLayout>
           )}
         </Stack.Screen>
+
+        {/* Profile Screen */}
         <Stack.Screen name="Profile">
           {(props) => (
             <ScreenLayout>
@@ -142,6 +155,8 @@ const App = () => {
             </ScreenLayout>
           )}
         </Stack.Screen>
+
+        {/* Favorites Screen */}
         <Stack.Screen name="Favorites">
           {(props) => (
             <ScreenLayout>
@@ -149,6 +164,8 @@ const App = () => {
             </ScreenLayout>
           )}
         </Stack.Screen>
+
+        {/* Restaurant Screen */}
         <Stack.Screen name="Restaurant">
           {(props) => (
             <ScreenLayout>
@@ -156,6 +173,8 @@ const App = () => {
             </ScreenLayout>
           )}
         </Stack.Screen>
+
+        {/* BookTable Screen */}
         <Stack.Screen name="BookTable">
           {(props) => (
             <ScreenLayout>
@@ -163,6 +182,8 @@ const App = () => {
             </ScreenLayout>
           )}
         </Stack.Screen>
+
+        {/* Search Screen */}
         <Stack.Screen name="Search">
           {(props) => (
             <ScreenLayout>
