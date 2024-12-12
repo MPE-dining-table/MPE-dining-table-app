@@ -93,8 +93,8 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   logo: {
-    width: 120,
-    height: 120,
+    width: 300,
+    height: 300,
     marginBottom: 30,
   },
   inputContainer: {
