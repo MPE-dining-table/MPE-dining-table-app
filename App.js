@@ -9,12 +9,13 @@ import ProfileScreen from './components/ProfileScreen';
 import FavoritesScreen from './components/FavoritesScreen';
 import RestaurantScreen from './components/RestaurantScreen';
 import BookTableScreen from './components/BookTableScreen';
-import SearchScreen from './components/SearchScreen';
+import SearchScreen from './components/SearchScreen'; // Ensure SearchScreen is imported
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faHome, faSearch, faUser, faHeart } from '@fortawesome/free-solid-svg-icons';
 
 const Stack = createStackNavigator();
 
+// Footer component
 const Footer = () => {
   const navigation = useNavigation();
 
@@ -36,29 +37,83 @@ const Footer = () => {
   );
 };
 
+// Layout component to wrap all screens with the Footer
+const ScreenLayout = ({ children }) => (
+  <SafeAreaView style={{ flex: 1 }}>
+    <View style={styles.container}>
+      {children}
+    </View>
+    <Footer />
+  </SafeAreaView>
+);
+
+// App component
 const App = () => {
   return (
     <NavigationContainer>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.container}>
-          <Stack.Navigator 
-            initialRouteName="Home"
-            screenOptions={{
-              headerShown: false
-            }}
-          >
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Signup" component={SignupScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-            <Stack.Screen name="Favorites" component={FavoritesScreen} />
-            <Stack.Screen name="Restaurant" component={RestaurantScreen} />
-            <Stack.Screen name="BookTable" component={BookTableScreen} />
-            <Stack.Screen name="Search" component={SearchScreen} />
-          </Stack.Navigator>
-          <Footer />
-        </View>
-      </SafeAreaView>
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="Home">
+          {props => (
+            <ScreenLayout>
+              <HomeScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Signup">
+          {props => (
+            <ScreenLayout>
+              <SignupScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Login">
+          {props => (
+            <ScreenLayout>
+              <LoginScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Profile">
+          {props => (
+            <ScreenLayout>
+              <ProfileScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Favorites">
+          {props => (
+            <ScreenLayout>
+              <FavoritesScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Restaurant">
+          {props => (
+            <ScreenLayout>
+              <RestaurantScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="BookTable">
+          {props => (
+            <ScreenLayout>
+              <BookTableScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+        <Stack.Screen name="Search">
+          {props => (
+            <ScreenLayout>
+              <SearchScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
@@ -68,10 +123,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   footerContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     backgroundColor: '#F5DEB3',
     paddingVertical: 10,
     flexDirection: 'row',
@@ -79,7 +130,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderColor: '#C0C0C0',
-  }
+  },
 });
 
 export default App;
+
