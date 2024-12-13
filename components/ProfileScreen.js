@@ -1,4 +1,4 @@
-import React from "react";
+import {useState} from "react";
 import { useSelector } from "react-redux";
 import {
   View,
@@ -6,11 +6,12 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Modal,
 } from "react-native";
 
 const ProfileScreen = () => {
   const user = useSelector((state) => state.user.user);
-
+const [showBookingsModal, setShowBookingsModal] =useState(false)
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -21,7 +22,7 @@ const ProfileScreen = () => {
         </TouchableOpacity>
         {/* Settings Icon on the top-right corner */}
         <TouchableOpacity style={styles.settingsIcon}>
-          <Icon name="cog" size={24} color="black" /> {/* Black settings icon */}
+          {/* <Icon name="cog" size={24} color="black" /> Black settings icon */}
         </TouchableOpacity>
       </View>
 
@@ -40,7 +41,7 @@ const ProfileScreen = () => {
             value={user?.firstName || ""}
             placeholder="Enter your first name"
             placeholderTextColor="#888"
-            editable={false}
+            editable={true}
           />
 
           <Text style={styles.label}>Last name</Text>
@@ -49,7 +50,7 @@ const ProfileScreen = () => {
             value={user?.lastName || ""}
             placeholder="Enter your last name"
             placeholderTextColor="#888"
-            editable={false}
+            editable={true}
           />
 
           <Text style={styles.label}>Email</Text>
@@ -58,7 +59,7 @@ const ProfileScreen = () => {
             value={user?.email || ""}
             placeholder="Enter your email"
             placeholderTextColor="#888"
-            editable={false}
+            editable={true}
           />
 
           <Text style={styles.label}>Mobile number</Text>
@@ -67,7 +68,7 @@ const ProfileScreen = () => {
             value={user?.cellphone || ""}
             placeholder="Enter your mobile number"
             placeholderTextColor="#888"
-            editable={false}
+            editable={true}
           />
         </View>
 
