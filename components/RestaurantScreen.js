@@ -3,16 +3,13 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   TouchableOpacity,
   ScrollView,
   Modal,
   TextInput,
-  Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import Carousel from 'react-native-snap-carousel';
 
 const RestaurantScreen = ({ route }) => {
   const navigation = useNavigation();
@@ -31,39 +28,8 @@ const RestaurantScreen = ({ route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [reviewText, setReviewText] = useState('');
 
-  // Sample images for the carousel
-  const images = [
-    'https://via.placeholder.com/600/92c952',
-    'https://via.placeholder.com/600/771796',
-    'https://via.placeholder.com/600/24f355',
-    'https://via.placeholder.com/600/d32776',
-  ];
-
-  // Render a single carousel image
-  const renderCarouselItem = ({ item }) => {
-    return (
-      <Image
-        source={{ uri: item }}
-        style={styles.carouselImage}
-        resizeMode="cover"
-      />
-    );
-  };
-
   return (
     <ScrollView style={styles.container}>
-      {/* Carousel for Restaurant Images */}
-      <View style={styles.carouselContainer}>
-        <Carousel
-          data={images}
-          renderItem={renderCarouselItem}
-          sliderWidth={Dimensions.get('window').width}
-          itemWidth={Dimensions.get('window').width}
-          loop
-          autoplay
-        />
-      </View>
-
       {/* Restaurant Name and Location */}
       <View style={styles.detailsContainer}>
         <Text style={styles.restaurantName}>{restaurant.name}</Text>
@@ -145,13 +111,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-  },
-  carouselContainer: {
-    height: 250,
-  },
-  carouselImage: {
-    width: '100%',
-    height: '100%',
   },
   detailsContainer: {
     padding: 16,
