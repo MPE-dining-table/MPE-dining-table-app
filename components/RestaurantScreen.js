@@ -72,7 +72,7 @@ const RestaurantScreen = ({ route }) => {
       {/* Book Table Button */}
       <TouchableOpacity
         style={styles.bookButton}
-        onPress={() => navigation.navigate('ConfirmBookingScreen')}
+        onPress={() => navigation.navigate('BookingScreen')}
       >
         <Text style={styles.bookButtonText}>Book Table</Text>
       </TouchableOpacity>
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   bookButton: {
-    backgroundColor: '#F5DEB3', // Light brown
+    backgroundColor: '#F5DEB3',
     padding: 16,
     alignItems: 'center',
     margin: 16,
