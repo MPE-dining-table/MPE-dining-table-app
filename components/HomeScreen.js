@@ -25,26 +25,31 @@ export default function HomeScreen({ navigation }) {
           source={{ uri: 'https://i.pinimg.com/736x/15/00/17/15001709fcddb79a0e3a654d2b1934b7.jpg' }} 
           style={styles.logo} 
         />
-        <View style={styles.inputContainer}>
-          <Icon name="search" size={20} color="#555" style={styles.searchIcon} />
-          <TextInput style={styles.input} placeholder="Search Restaurants" placeholderTextColor="#555" />
-        </View>
+        
         {/* Book Table Button */}
         <TouchableOpacity 
-          style={styles.button}
+          style={[styles.button, styles.bookTableButton]} // Apply navy blue style
           onPress={() => navigation.navigate('BookTable')} // Add navigation handler
         >
           <Icon name="calendar" size={20} color="white" style={styles.calendarIcon} />
           <Text style={styles.buttonText}>Book Table</Text>
         </TouchableOpacity>
-        <View style={styles.splitButton}>
-          <TouchableOpacity style={styles.smallButton} onPress={() => navigation.navigate('Signup')}>
-            <Text style={styles.splitButtonText}>Signup</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.smallButton} onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.splitButtonText}>Login</Text>
-          </TouchableOpacity>
-        </View>
+
+        {/* Signup Button */}
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation.navigate('Signup')} // Add navigation handler
+        >
+          <Text style={styles.buttonText}>Signup</Text>
+        </TouchableOpacity>
+
+        {/* Login Button */}
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => navigation.navigate('Login')} // Add navigation handler
+        >
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -69,24 +74,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 100, // Adjust the width as needed
     height: 100, // Adjust the height as needed
-    marginBottom: 20, // Add margin to position it above the search button
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white', 
-    borderRadius: 5, 
-    width: '80%', 
-    marginBottom: 20,
-    elevation: 3,
-  },
-  searchIcon: {
-    padding: 10,
-  },
-  input: { 
-    flex: 1,
-    padding: 10, 
-    fontFamily: 'Poppins_400Regular',
+    marginBottom: 20, // Add margin to position it above the buttons
   },
   button: { 
     backgroundColor: 'green', 
@@ -100,6 +88,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  bookTableButton: {
+    backgroundColor: 'navy', // Navy blue color for the Book Table button
+  },
   calendarIcon: {
     marginRight: 10,
   },
@@ -109,23 +100,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins_400Regular',
     textAlign: 'center', // Center the text
-  },
-  splitButton: {
-    flexDirection: 'row',
-    marginTop: 20,
-  },
-  smallButton: {
-    backgroundColor: 'green',
-    flex: 1,
-    paddingVertical: 5,
-    marginHorizontal: 2,
-    borderRadius: 5,
-    width: '20px',
-  },
-  splitButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 12, /* Reduced font size */
-    textAlign: 'center',
   },
 });
