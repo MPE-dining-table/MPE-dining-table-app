@@ -11,6 +11,12 @@ import {
 
 const ProfileScreen = () => {
   const user = useSelector((state) => state.user.user);
+
+  // Local state to allow editing
+  const [firstName, setFirstName] = useState(user?.firstName || "");
+  const [lastName, setLastName] = useState(user?.lastName || "");
+  const [email, setEmail] = useState(user?.email || "");
+  const [cellphone, setCellphone] = useState(user?.cellphone || "");
   const [showBookingsModal, setShowBookingsModal] = useState(false);
 
   return (
@@ -35,37 +41,37 @@ const ProfileScreen = () => {
           <Text style={styles.label}>First name</Text>
           <TextInput
             style={styles.input}
-            value={user?.firstName || ""}
+            value={firstName}
+            onChangeText={setFirstName}
             placeholder="Enter your first name"
             placeholderTextColor="#888"
-            editable={true}
           />
 
           <Text style={styles.label}>Last name</Text>
           <TextInput
             style={styles.input}
-            value={user?.lastName || ""}
+            value={lastName}
+            onChangeText={setLastName}
             placeholder="Enter your last name"
             placeholderTextColor="#888"
-            editable={true}
           />
 
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
-            value={user?.email || ""}
+            value={email}
+            onChangeText={setEmail}
             placeholder="Enter your email"
             placeholderTextColor="#888"
-            editable={true}
           />
 
           <Text style={styles.label}>Mobile number</Text>
           <TextInput
             style={styles.input}
-            value={user?.cellphone || ""}
+            value={cellphone}
+            onChangeText={setCellphone}
             placeholder="Enter your mobile number"
             placeholderTextColor="#888"
-            editable={true}
           />
         </View>
 
@@ -204,3 +210,14 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
+
+
+
+
+
+
+
+
+
+
+
