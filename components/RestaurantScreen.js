@@ -1,61 +1,111 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import RNPickerSelect from 'react-native-picker-select';
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import the icon package
 
 const RestaurantScreen = () => {
+  const [date, setDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [time, setTime] = useState(new Date());
+  const [pax, setPax] = useState('');
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+  const [selectedPax, setSelectedPax] = useState('');
+
+  const handleConfirmSelection = () => {
+    setSelectedDate(date.toLocaleDateString());
+    setSelectedTime(time.toLocaleTimeString());
+    setSelectedPax(pax);
+  };
+
   return (
     <View style={styles.container}>
       {/* Back Arrow */}
-      <TouchableOpacity style={styles.backArrow}>
-        <Text style={styles.arrow}>&#8592;</Text>
+      <TouchableOpacity>
+        <Text style={styles.backArrow}>{'<-'}</Text>
       </TouchableOpacity>
 
-      {/* Restaurant Name */}
+      {/* Title */}
       <Text style={styles.title}>Name of Restaurant</Text>
 
-      {/* Buttons: Date, Pax, Time */}
+      {/* Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Image
-            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/747/747310.png' }}
-            style={styles.icon}
-          />
-          <Text style={styles.buttonText}>Date</Text>
+        {/* Date */}
+        <TouchableOpacity style={styles.button} onPress={() => setShowDatePicker(true)}>
+          <Text style={styles.buttonText}>📅 Date</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button}>
-          <Image
-            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}
-            style={styles.icon}
+        {/* Pax (with 2 people icon) */}
+        <View style={styles.paxContainer}>
+          <Icon name="users" size={20} color="black" style={styles.paxIcon} /> {/* 2 people icon */}
+          <RNPickerSelect
+            onValueChange={(value) => setPax(value)}
+            items={[
+              { label: '1', value: '1' },
+              { label: '2', value: '2' },
+              { label: '3', value: '3' },
+              { label: '4', value: '4' },
+              { label: '5+', value: '5+' },
+            ]}
+            placeholder={{ label: 'Pax', value: null }}
+            style={pickerSelectStyles}
           />
-          <Text style={styles.buttonText}>Pax</Text>
-        </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity style={styles.button}>
-          <Image
-            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/1038/1038870.png' }}
-            style={styles.icon}
-          />
-          <Text style={styles.buttonText}>Time</Text>
+        {/* Time */}
+        <TouchableOpacity style={styles.button} onPress={() => setShowTimePicker(true)}>
+          <Text style={styles.buttonText}>⏰ Time</Text>
         </TouchableOpacity>
       </View>
 
       {/* Special Request */}
-      <Text style={styles.specialRequestLabel}>Special Request</Text>
-      <TextInput
-        style={styles.textArea}
-        multiline
-        placeholder=""
-      />
+      <Text style={styles.specialRequest}>Special Request</Text>
+      <TextInput style={styles.textInput} placeholder="Type here..." multiline />
 
-      {/* Confirm Booking Button */}
-      <TouchableOpacity style={styles.confirmButton}>
-        <Text style={styles.confirmButtonText}>Cornfim Booking</Text>
+      {/* Confirm and Cancel */}
+      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmSelection}>
+        <Text style={styles.confirmButtonText}>Confirm Booking</Text>
       </TouchableOpacity>
-
-      {/* Cancel Link */}
       <TouchableOpacity>
         <Text style={styles.cancelText}>cancel</Text>
       </TouchableOpacity>
+
+      {/* Display selected information */}
+      {selectedDate && selectedTime && selectedPax && (
+        <View style={styles.selectedInfoContainer}>
+          <Text style={styles.selectedInfoText}>Date: {selectedDate}</Text>
+          <Text style={styles.selectedInfoText}>Time: {selectedTime}</Text>
+          <Text style={styles.selectedInfoText}>Pax: {selectedPax} people</Text>
+        </View>
+      )}
+
+      {/* Date Picker */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={date}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) setDate(selectedDate);
+          }}
+        />
+      )}
+
+      {/* Time Picker */}
+      {showTimePicker && (
+        <DateTimePicker
+          value={time}
+          mode="time"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={(event, selectedTime) => {
+            setShowTimePicker(false);
+            if (selectedTime) setTime(selectedTime);
+          }}
+        />
+      )}
     </View>
   );
 };
@@ -63,69 +113,64 @@ const RestaurantScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#759edb',
+    backgroundColor: '#7DA7F2',
     padding: 20,
-    justifyContent: 'flex-start',
   },
   backArrow: {
+    fontSize: 20,
+    color: 'black',
     marginBottom: 10,
   },
-  arrow: {
-    fontSize: 24,
-    color: 'black',
-  },
   title: {
-    fontSize: 24,
-    textAlign: 'center',
+    fontSize: 22,
     color: 'red',
-    fontWeight: 'bold',
-    marginVertical: 10,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginVertical: 20,
+    justifyContent: 'space-around',
+    marginBottom: 20,
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#e8e8e8',
+    backgroundColor: '#f0f0f0',
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 10,
     width: '30%',
-    justifyContent: 'center',
-  },
-  icon: {
-    width: 20,
-    height: 20,
-    marginRight: 5,
+    alignItems: 'center',
   },
   buttonText: {
     fontSize: 16,
-    color: 'black',
   },
-  specialRequestLabel: {
+  paxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '30%',
+  },
+  paxIcon: {
+    marginRight: 5,
+  },
+  specialRequest: {
     fontSize: 16,
-    color: 'black',
     fontWeight: 'bold',
-    marginBottom: 5,
+    marginBottom: 10,
   },
-  textArea: {
-    height: 120,
-    borderColor: 'gray',
+  textInput: {
+    height: 100,
     borderWidth: 1,
+    borderColor: '#ccc',
     backgroundColor: '#d3d3d3',
-    borderRadius: 5,
+    borderRadius: 10,
+    marginBottom: 20,
     textAlignVertical: 'top',
     padding: 10,
-    marginBottom: 20,
   },
   confirmButton: {
-    backgroundColor: '#b38e5d',
-    borderRadius: 8,
-    paddingVertical: 12,
+    backgroundColor: '#b08968',
+    padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
-    marginBottom: 10,
   },
   confirmButtonText: {
     color: 'white',
@@ -134,11 +179,44 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     color: 'red',
-    fontSize: 16,
     textAlign: 'center',
-    fontWeight: 'bold',
+    marginTop: 10,
+    fontSize: 16,
+  },
+  selectedInfoContainer: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  selectedInfoText: {
+    fontSize: 16,
+    color: 'black',
   },
 });
 
+const pickerSelectStyles = {
+  inputIOS: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    borderRadius: 10,
+    textAlign: 'center',
+    width: '100%',
+  },
+  inputAndroid: {
+    backgroundColor: '#f0f0f0',
+    padding: 10,
+    borderRadius: 10,
+    textAlign: 'center',
+    width: '100%',
+  },
+};
+
 export default RestaurantScreen;
+
+
+
+
+
 
