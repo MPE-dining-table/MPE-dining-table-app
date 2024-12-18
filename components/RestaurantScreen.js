@@ -2,23 +2,13 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput, StyleSheet, Platform } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import RNPickerSelect from 'react-native-picker-select';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import the icon package
 
 const RestaurantScreen = () => {
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [time, setTime] = useState(new Date());
-  const [pax, setPax] = useState('');
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [selectedPax, setSelectedPax] = useState('');
-
-  const handleConfirmSelection = () => {
-    setSelectedDate(date.toLocaleDateString());
-    setSelectedTime(time.toLocaleTimeString());
-    setSelectedPax(pax);
-  };
+  const [pax, setPax] = useState(null); // pax initially null
 
   return (
     <View style={styles.container}>
@@ -37,20 +27,21 @@ const RestaurantScreen = () => {
           <Text style={styles.buttonText}>📅 Date</Text>
         </TouchableOpacity>
 
-        {/* Pax (with 2 people icon) */}
+        {/* Pax - Dropdown with Icon */}
         <View style={styles.paxContainer}>
-          <Icon name="users" size={20} color="black" style={styles.paxIcon} /> {/* 2 people icon */}
+          <Text style={styles.buttonText}>👥 Pax</Text>
           <RNPickerSelect
-            onValueChange={(value) => setPax(value)}
+            onValueChange={(value) => setPax(value)} // Updates pax state when chosen
             items={[
-              { label: '1', value: '1' },
-              { label: '2', value: '2' },
-              { label: '3', value: '3' },
-              { label: '4', value: '4' },
-              { label: '5+', value: '5+' },
+              { label: '1 Person', value: '1' },
+              { label: '2 People', value: '2' },
+              { label: '3 People', value: '3' },
+              { label: '4 People', value: '4' },
+              { label: '5+ People', value: '5+' },
             ]}
-            placeholder={{ label: 'Pax', value: null }}
+            placeholder={{ label: 'Choose Pax', value: null }} // Placeholder for Pax
             style={pickerSelectStyles}
+            value={pax} // Bind the picker to the pax state
           />
         </View>
 
@@ -65,21 +56,12 @@ const RestaurantScreen = () => {
       <TextInput style={styles.textInput} placeholder="Type here..." multiline />
 
       {/* Confirm and Cancel */}
-      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmSelection}>
+      <TouchableOpacity style={styles.confirmButton}>
         <Text style={styles.confirmButtonText}>Confirm Booking</Text>
       </TouchableOpacity>
       <TouchableOpacity>
-        <Text style={styles.cancelText}>cancel</Text>
+        <Text style={styles.cancelText}>Cancel</Text>
       </TouchableOpacity>
-
-      {/* Display selected information */}
-      {selectedDate && selectedTime && selectedPax && (
-        <View style={styles.selectedInfoContainer}>
-          <Text style={styles.selectedInfoText}>Date: {selectedDate}</Text>
-          <Text style={styles.selectedInfoText}>Time: {selectedTime}</Text>
-          <Text style={styles.selectedInfoText}>Pax: {selectedPax} people</Text>
-        </View>
-      )}
 
       {/* Date Picker */}
       {showDatePicker && (
@@ -143,13 +125,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   paxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     width: '30%',
-  },
-  paxIcon: {
-    marginRight: 5,
+    borderWidth: 1, // Adds a border to the Pax container
+    borderRadius: 10,
+    backgroundColor: '#f0f0f0', // Background color for the Pax box
+    padding: 10,
   },
   specialRequest: {
     fontSize: 16,
@@ -183,17 +165,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
   },
-  selectedInfoContainer: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  selectedInfoText: {
-    fontSize: 16,
-    color: 'black',
-  },
 });
 
 const pickerSelectStyles = {
@@ -202,18 +173,22 @@ const pickerSelectStyles = {
     padding: 10,
     borderRadius: 10,
     textAlign: 'center',
-    width: '100%',
+    width: '100%', // Ensures dropdown fills container width
   },
   inputAndroid: {
     backgroundColor: '#f0f0f0',
     padding: 10,
     borderRadius: 10,
     textAlign: 'center',
-    width: '100%',
+    width: '100%', // Ensures dropdown fills container width
   },
 };
 
 export default RestaurantScreen;
+
+
+
+
 
 
 
