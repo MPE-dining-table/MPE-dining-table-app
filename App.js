@@ -27,6 +27,7 @@ import ProfileScreen from "./components/ProfileScreen";
 import SignupScreen from "./components/SignupScreen";
 import RestaurantScreen from "./components/RestaurantScreen";
 import BookingScreen from "./components/BookingScreen";
+import ConfirmationScreen from "./components/ConfirmationScreen"; // Import the ConfirmationScreen
 
 import { Provider } from "react-redux";
 import { initializeStore, store } from "./redux/store";
@@ -226,6 +227,15 @@ const MainApp = () => {
             </ScreenLayout>
           )}
         </Stack.Screen>
+
+        {/* Add the ConfirmationScreen to the stack */}
+        <Stack.Screen name="ConfirmationScreen">
+          {(props) => (
+            <ScreenLayout>
+              <ConfirmationScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -251,31 +261,21 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#DEB887",
+    backgroundColor: '#DEB887',
   },
   container: {
     flex: 1,
   },
   footerContainer: {
-    backgroundColor: "#DEB887",
-    paddingVertical: 10,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#DEB887',
+    paddingBottom: 20,
   },
   footerButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 60,
-    height: 40, // Adjusted for better alignment
+    padding: 10,
   },
 });
+
 
 
