@@ -1,216 +1,144 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Modal,
-  TextInput,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { View, Text, TouchableOpacity, TextInput, StyleSheet, Image } from 'react-native';
 
-const RestaurantScreen = ({ route }) => {
-  const navigation = useNavigation();
-
-  // Add a fallback to avoid undefined errors
-  const { restaurant = {} } = route.params || {
-    restaurant: {
-      name: 'Unknown Restaurant',
-      location: 'No location provided',
-      phone: 'No phone available',
-      email: 'No email available',
-      description: 'No description available',
-    },
-  };
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [reviewText, setReviewText] = useState('');
-
+const RestaurantScreen = () => {
   return (
-    <ScrollView style={styles.container}>
-      {/* Restaurant Name and Location */}
-      <View style={styles.detailsContainer}>
-        <Text style={styles.restaurantName}>{restaurant.name}</Text>
-        <Text style={styles.location}>{restaurant.location}</Text>
-      </View>
-
-      {/* About and Review Links */}
-      <View style={styles.linksContainer}>
-        <TouchableOpacity onPress={() => {}}>
-          <Text style={styles.linkText}>About</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => setModalVisible(true)}>
-          <Text style={styles.linkText}>Review</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Horizontal Line */}
-      <View style={styles.horizontalLine} />
-
-      {/* Contact Information */}
-      <View style={styles.contactContainer}>
-        <View style={styles.contactItem}>
-          <Ionicons name="call-outline" size={24} color="#555" />
-          <Text style={styles.contactText}>{restaurant.phone}</Text>
-        </View>
-        <View style={styles.contactItem}>
-          <Ionicons name="mail-outline" size={24} color="#555" />
-          <Text style={styles.contactText}>{restaurant.email}</Text>
-        </View>
-      </View>
-
-      {/* Horizontal Line */}
-      <View style={styles.horizontalLine} />
-
-      {/* Restaurant Description */}
-      <View style={styles.descriptionContainer}>
-        <Text style={styles.descriptionText}>{restaurant.description}</Text>
-      </View>
-
-      {/* Book Table Button */}
-      <TouchableOpacity
-        style={styles.bookButton}
-        onPress={() => navigation.navigate('BookingScreen')}
-      >
-        <Text style={styles.bookButtonText}>Book Table</Text>
+    <View style={styles.container}>
+      {/* Back Arrow */}
+      <TouchableOpacity style={styles.backArrow}>
+        <Text style={styles.arrow}>&#8592;</Text>
       </TouchableOpacity>
 
-      {/* Review Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Leave a Review</Text>
-            <TextInput
-              style={styles.modalInput}
-              placeholder="Write your review here..."
-              multiline
-              value={reviewText}
-              onChangeText={(text) => setReviewText(text)}
-            />
-            <TouchableOpacity
-              style={styles.modalButton}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.modalButtonText}>Submit</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    </ScrollView>
+      {/* Restaurant Name */}
+      <Text style={styles.title}>Name of Restaurant</Text>
+
+      {/* Buttons: Date, Pax, Time */}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Image
+            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/747/747310.png' }}
+            style={styles.icon}
+          />
+          <Text style={styles.buttonText}>Date</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <Image
+            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}
+            style={styles.icon}
+          />
+          <Text style={styles.buttonText}>Pax</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <Image
+            source={{ uri: 'https://cdn-icons-png.flaticon.com/512/1038/1038870.png' }}
+            style={styles.icon}
+          />
+          <Text style={styles.buttonText}>Time</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Special Request */}
+      <Text style={styles.specialRequestLabel}>Special Request</Text>
+      <TextInput
+        style={styles.textArea}
+        multiline
+        placeholder=""
+      />
+
+      {/* Confirm Booking Button */}
+      <TouchableOpacity style={styles.confirmButton}>
+        <Text style={styles.confirmButtonText}>Cornfim Booking</Text>
+      </TouchableOpacity>
+
+      {/* Cancel Link */}
+      <TouchableOpacity>
+        <Text style={styles.cancelText}>cancel</Text>
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#759edb',
+    padding: 20,
+    justifyContent: 'flex-start',
   },
-  detailsContainer: {
-    padding: 16,
+  backArrow: {
+    marginBottom: 10,
   },
-  restaurantName: {
+  arrow: {
     fontSize: 24,
+    color: 'black',
+  },
+  title: {
+    fontSize: 24,
+    textAlign: 'center',
+    color: 'red',
     fontWeight: 'bold',
-    color: '#333',
+    marginVertical: 10,
   },
-  location: {
-    fontSize: 16,
-    color: '#555',
-    marginTop: 8,
-  },
-  linksContainer: {
+  buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginTop: 16,
+    marginVertical: 20,
   },
-  linkText: {
-    fontSize: 16,
-    color: 'blue',
-    textDecorationLine: 'underline',
-  },
-  horizontalLine: {
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-    marginVertical: 16,
-  },
-  contactContainer: {
-    paddingHorizontal: 16,
-  },
-  contactItem: {
+  button: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
-  },
-  contactText: {
-    fontSize: 16,
-    color: '#555',
-    marginLeft: 8,
-  },
-  descriptionContainer: {
-    paddingHorizontal: 16,
-    marginTop: 16,
-  },
-  descriptionText: {
-    fontSize: 16,
-    color: '#333',
-    lineHeight: 24,
-  },
-  bookButton: {
-    backgroundColor: '#F5DEB3',
-    padding: 16,
-    alignItems: 'center',
-    margin: 16,
+    backgroundColor: '#e8e8e8',
+    padding: 10,
     borderRadius: 8,
-  },
-  bookButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  modalContainer: {
-    flex: 1,
+    width: '30%',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  modalContent: {
-    backgroundColor: '#fff',
-    width: '80%',
-    padding: 16,
-    borderRadius: 8,
+  icon: {
+    width: 20,
+    height: 20,
+    marginRight: 5,
   },
-  modalTitle: {
-    fontSize: 20,
+  buttonText: {
+    fontSize: 16,
+    color: 'black',
+  },
+  specialRequestLabel: {
+    fontSize: 16,
+    color: 'black',
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 5,
   },
-  modalInput: {
+  textArea: {
+    height: 120,
+    borderColor: 'gray',
     borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 16,
-    minHeight: 100,
+    backgroundColor: '#d3d3d3',
+    borderRadius: 5,
+    textAlignVertical: 'top',
+    padding: 10,
+    marginBottom: 20,
   },
-  modalButton: {
-    backgroundColor: '#F5DEB3',
-    padding: 12,
+  confirmButton: {
+    backgroundColor: '#b38e5d',
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
-    borderRadius: 8,
+    marginBottom: 10,
   },
-  modalButtonText: {
+  confirmButtonText: {
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+  },
+  cancelText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });
 
 export default RestaurantScreen;
+
