@@ -18,6 +18,7 @@ import {
   faUser,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
+
 import HomeScreen from "./components/HomeScreen";
 import SearchScreen from "./components/SearchScreen";
 import BookTableScreen from "./components/BookTableScreen";
@@ -27,7 +28,8 @@ import ProfileScreen from "./components/ProfileScreen";
 import SignupScreen from "./components/SignupScreen";
 import RestaurantScreen from "./components/RestaurantScreen";
 import BookingScreen from "./components/BookingScreen";
-import ConfirmationScreen from "./components/ConfirmationScreen"; // Import the ConfirmationScreen
+import ConfirmationScreen from "./components/ConfirmationScreen";
+import PaymentScreen from "./components/PaymentScreen"; // Import PaymentScreen
 
 import { Provider } from "react-redux";
 import { initializeStore, store } from "./redux/store";
@@ -228,7 +230,15 @@ const MainApp = () => {
           )}
         </Stack.Screen>
 
-        {/* Add the ConfirmationScreen to the stack */}
+        {/* Payment and Confirmation Screens */}
+        <Stack.Screen name="PaymentScreen">
+          {(props) => (
+            <ScreenLayout>
+              <PaymentScreen {...props} />
+            </ScreenLayout>
+          )}
+        </Stack.Screen>
+
         <Stack.Screen name="ConfirmationScreen">
           {(props) => (
             <ScreenLayout>
@@ -276,6 +286,3 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 });
-
-
-

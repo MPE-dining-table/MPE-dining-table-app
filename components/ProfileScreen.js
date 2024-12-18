@@ -1,4 +1,4 @@
-import {useState} from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import {
   View,
@@ -11,28 +11,25 @@ import {
 
 const ProfileScreen = () => {
   const user = useSelector((state) => state.user.user);
-const [showBookingsModal, setShowBookingsModal] =useState(false)
+  const [showBookingsModal, setShowBookingsModal] = useState(false);
+
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* Header/Navbar */}
       <View style={styles.header}>
-        <Text style={styles.headerTextSmall}>My Profile</Text>
-        <TouchableOpacity onPress={() => setShowBookingsModal(true)} style={styles.bookingsLink}>
-          <Text style={styles.headerTextSmall}>Bookings</Text>
-        </TouchableOpacity>
-        {/* Settings Icon on the top-right corner */}
-        <TouchableOpacity style={styles.settingsIcon}>
-          {/* <Icon name="cog" size={24} color="black" /> Black settings icon */}
-        </TouchableOpacity>
+        <Text style={styles.headerText}>My Profile</Text>
       </View>
+
+      {/* Bookings Link */}
+      <TouchableOpacity
+        onPress={() => setShowBookingsModal(true)}
+        style={styles.bookingsLink}
+      >
+        <Text style={styles.bookingsLinkText}>Bookings</Text>
+      </TouchableOpacity>
 
       {/* Content */}
       <View style={styles.content}>
-        {/* Bookings Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Bookings</Text>
-        </View>
-
         {/* Form Section */}
         <View style={styles.form}>
           <Text style={styles.label}>First name</Text>
@@ -91,7 +88,10 @@ const [showBookingsModal, setShowBookingsModal] =useState(false)
             <Text style={styles.bookingItem}>Booking 1: Completed</Text>
             <Text style={styles.bookingItem}>Booking 2: Pending</Text>
             <Text style={styles.bookingItem}>Booking 3: Uncompleted</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={() => setShowBookingsModal(false)}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setShowBookingsModal(false)}
+            >
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -104,17 +104,17 @@ const [showBookingsModal, setShowBookingsModal] =useState(false)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5", // Light gray background
+    backgroundColor: "#F5F5F5",
   },
   header: {
-    backgroundColor: "#FF6347", // Tomato color for header
+    backgroundColor: "#DEB887", // Light brown color
     paddingVertical: 20,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    elevation: 5, // Shadow for Android
+    elevation: 5,
   },
   headerText: {
     color: "#FFF",
@@ -122,28 +122,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   bookingsLink: {
-    alignItems: 'flex-end',
-    marginRight: 40, // Move "Bookings" to the left to avoid overlapping with the settings icon
+    alignSelf: "flex-end",
+    marginTop: 10,
+    marginRight: 20,
   },
-  settingsIcon: {
-    position: 'absolute', // Position the settings icon absolutely
-    right: 20, // Align to the right
-    top: 15, // Align to the top
+  bookingsLinkText: {
+    color: "#1E90FF", // Blue color for the link
+    fontSize: 14,
+    textDecorationLine: "underline",
   },
   content: {
     flex: 1,
     padding: 20,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
+    justifyContent: "center",
   },
   form: {
-    marginBottom: 30,
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
@@ -157,60 +151,54 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
     color: "#333",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3, // Shadow for Android
+    elevation: 3,
   },
   updateButton: {
-    backgroundColor: "#4CAF50", // Green color for button
+    backgroundColor: "#DEB887", // Light brown color
     borderRadius: 10,
-    padding: 15,
+    padding: 12,
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5, // Shadow for Android
+    alignSelf: "center",
+    width: 150,
   },
   updateButtonText: {
     color: "#FFF",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background for modal
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: '#FFF',
+    backgroundColor: "#FFF",
     padding: 20,
     borderRadius: 10,
-    width: '80%',
+    width: "80%",
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 20,
   },
   bookingItem: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     marginBottom: 5,
   },
   closeButton: {
-    backgroundColor: '#333',
+    backgroundColor: "#333",
     borderRadius: 5,
     padding: 10,
-    alignItems: 'center',
+    alignItems: "center",
+    marginTop: 20,
   },
   closeButtonText: {
-    color: '#FFF',
-    fontSize: 18,
+    color: "#FFF",
+    fontSize: 16,
     fontWeight: "bold",
   },
 });
