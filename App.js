@@ -18,7 +18,6 @@ import {
   faUser,
   faHeart,
 } from "@fortawesome/free-solid-svg-icons";
-import Svg, { Path } from "react-native-svg";
 import HomeScreen from "./components/HomeScreen";
 import SearchScreen from "./components/SearchScreen";
 import BookTableScreen from "./components/BookTableScreen";
@@ -73,53 +72,49 @@ const Footer = ({ activeScreen }) => {
       {/* Home Button */}
       <TouchableOpacity
         onPress={() => navigation.navigate("Home")}
-        style={[styles.footerButton, activeScreen === "Home" && styles.activeButton]}
+        style={styles.footerButton}
       >
-        {activeScreen === "Home" && (
-          <Svg height={40} width={60} viewBox="0 0 60 40">
-            <Path d="M0 20 Q30 0 60 20 L60 40 Q30 30 0 40 Z" fill="#FF6347" strokeWidth={0} />
-          </Svg>
-        )}
-        <FontAwesomeIcon icon={faHome} size={24} color={getIconColor("Home")} />
+        <FontAwesomeIcon
+          icon={faHome}
+          size={24}
+          color={getIconColor("Home")}
+        />
       </TouchableOpacity>
 
       {/* Search Button */}
       <TouchableOpacity
         onPress={() => navigation.navigate("Search")}
-        style={[styles.footerButton, activeScreen === "Search" && styles.activeButton]}
+        style={styles.footerButton}
       >
-        {activeScreen === "Search" && (
-          <Svg height={40} width={60} viewBox="0 0 60 40">
-            <Path d="M0 20 Q30 0 60 20 L60 40 Q30 30 0 40 Z" fill="#FF6347" strokeWidth={0} />
-          </Svg>
-        )}
-        <FontAwesomeIcon icon={faSearch} size={24} color={getIconColor("Search")} />
+        <FontAwesomeIcon
+          icon={faSearch}
+          size={24}
+          color={getIconColor("Search")}
+        />
       </TouchableOpacity>
 
       {/* Profile Button */}
       <TouchableOpacity
         onPress={() => navigation.navigate("Profile")}
-        style={[styles.footerButton, activeScreen === "Profile" && styles.activeButton]}
+        style={styles.footerButton}
       >
-        {activeScreen === "Profile" && (
-          <Svg height={40} width={60} viewBox="0 0 60 40">
-            <Path d="M0 20 Q30 0 60 20 L60 40 Q30 30 0 40 Z" fill="#FF6347" strokeWidth={0} />
-          </Svg>
-        )}
-        <FontAwesomeIcon icon={faUser} size={24} color={getIconColor("Profile")} />
+        <FontAwesomeIcon
+          icon={faUser}
+          size={24}
+          color={getIconColor("Profile")}
+        />
       </TouchableOpacity>
 
       {/* Favorites Button */}
       <TouchableOpacity
         onPress={() => navigation.navigate("Favorites")}
-        style={[styles.footerButton, activeScreen === "Favorites" && styles.activeButton]}
+        style={styles.footerButton}
       >
-        {activeScreen === "Favorites" && (
-          <Svg height={40} width={60} viewBox="0 0 60 40">
-            <Path d="M0 20 Q30 0 60 20 L60 40 Q30 30 0 40 Z" fill="#FF6347" strokeWidth={0} />
-          </Svg>
-        )}
-        <FontAwesomeIcon icon={faHeart} size={24} color={getIconColor("Favorites")} />
+        <FontAwesomeIcon
+          icon={faHeart}
+          size={24}
+          color={getIconColor("Favorites")}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -279,11 +274,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: 60,
-    height: 20,
-    position: "relative",
-  },
-  activeButton: {
-    position: "relative",
-    zIndex: 1,
+    height: 40, // Adjusted for better alignment
   },
 });
+
