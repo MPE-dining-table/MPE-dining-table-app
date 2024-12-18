@@ -1,16 +1,43 @@
-import React, { useState } from 'react';
-import { View, TextInput, FlatList, Image, TouchableOpacity, StyleSheet, Text, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  TextInput,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Text,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import axios from "axios";
 
 const SearchScreen = () => {
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [restaurants, setRestaurants] = useState([
-    { id: '1', name: 'Restaurant 1', location: 'Location 1' },
-    { id: '2', name: 'Restaurant 2', location: 'Location 2' },
-    { id: '3', name: 'Restaurant 3', location: 'Location 3' },
-  ]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [restaurants, setRestaurants] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRes = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        "https://mpe-backend-server.onrender.com/api/actions/fetch-restuarents"
+      );
+      setRestaurants(response.data.restuarents); // Set restaurants data
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Failed to fetch restaurants.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRes();
+  }, []);
 
   const handleSearch = (text) => {
     setSearchQuery(text);
@@ -22,26 +49,26 @@ const SearchScreen = () => {
   };
 
   const handleAddPress = (restaurant) => {
-    navigation.navigate('RestaurantScreen', { restaurant });
+    navigation.navigate("Restaurant", { restaurant });
   };
 
   const handleImagePress = (restaurant) => {
     // Show an alert asking to sign up or log in
     Alert.alert(
-      'Authentication Required',
-      'Please sign up or log in to continue.',
+      "Authentication Required",
+      "Please sign up or log in to continue.",
       [
         {
-          text: 'Sign Up',
-          onPress: () => navigation.navigate('SignupScreen'), // Navigate to SignupScreen
+          text: "Sign Up",
+          onPress: () => navigation.navigate("SignupScreen"), // Navigate to SignupScreen
         },
         {
-          text: 'Log In',
-          onPress: () => navigation.navigate('LoginScreen'), // Navigate to LoginScreen
+          text: "Log In",
+          onPress: () => navigation.navigate("LoginScreen"), // Navigate to LoginScreen
         },
         {
-          text: 'Cancel',
-          style: 'cancel',
+          text: "Cancel",
+          style: "cancel",
         },
       ],
       { cancelable: false }
@@ -50,31 +77,27 @@ const SearchScreen = () => {
 
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
-      {/* Wrap the Image in a TouchableOpacity for navigation */}
-      <TouchableOpacity onPress={() => handleImagePress(item)}>
+      <TouchableOpacity
+        accessibilityLabel={`View details of ${item.restuarentName}`}
+        onPress={() => handleAddPress(item)}
+      >
         <Image
-          source={{ uri: `https://via.placeholder.com/150?text=${item.name}` }}
+          source={{ uri: item.image || "https://via.placeholder.com/150" }}
           style={styles.image}
         />
       </TouchableOpacity>
-
-      {/* Restaurant Name */}
       <View style={styles.textContainer}>
-        <Text style={styles.restaurantName}>{item.name}</Text>
+        <Text style={styles.restaurantName}>{item.restuarentName}</Text>
       </View>
-
-      {/* Location Icon with Location Name */}
       <View style={styles.locationContainer}>
         <TouchableOpacity
           style={styles.locationIcon}
-          onPress={() => handleLocationPress(item.location)}
+          onPress={() => handleLocationPress(item.address)}
         >
           <Ionicons name="location-outline" size={24} color="#FF6347" />
         </TouchableOpacity>
-        <Text style={styles.locationText}>{item.location}</Text>
+        <Text style={styles.locationText}>{item.address}</Text>
       </View>
-
-      {/* Add Icon */}
       <TouchableOpacity
         style={styles.addIcon}
         onPress={() => handleAddPress(item)}
@@ -84,10 +107,19 @@ const SearchScreen = () => {
     </View>
   );
 
+  if (loading) {
+    return <ActivityIndicator size="large" color="#FF6347" />;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={24} color="#888" style={styles.searchIcon} />
+        <Ionicons
+          name="search"
+          size={24}
+          color="#888"
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Search for restaurants..."
@@ -108,18 +140,18 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5', // Light gray background
+    backgroundColor: "#F5F5F5", // Light gray background
     padding: 16,
   },
   searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
     borderRadius: 30,
     paddingHorizontal: 16,
     marginBottom: 20,
     elevation: 5, // Shadow for Android
-    shadowColor: '#000', // Shadow for iOS
+    shadowColor: "#000", // Shadow for iOS
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -131,48 +163,48 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 50,
     fontSize: 16,
-    color: '#333',
+    color: "#333",
   },
   listContainer: {
     paddingBottom: 16,
   },
   imageContainer: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 20,
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 200,
     borderRadius: 10,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   textContainer: {
-    position: 'absolute',
+    position: "absolute",
     top: 15,
     left: 15,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
   },
   restaurantName: {
-    color: 'white',
+    color: "white",
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   locationContainer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 15,
     left: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 5,
   },
   locationText: {
-    color: '#333', // Dark gray color for the location name
+    color: "#333", // Dark gray color for the location name
     fontSize: 16,
     marginLeft: 5,
   },
@@ -180,14 +212,14 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   addIcon: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 15,
     right: 15,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 5,
     elevation: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
