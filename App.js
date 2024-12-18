@@ -50,7 +50,7 @@ const splashStyles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFF",
+    backgroundColor: "#DEB887",
   },
   logo: {
     width: 400,
@@ -251,13 +251,13 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#FFF",
+    backgroundColor: "#DEB887",
   },
   container: {
     flex: 1,
   },
   footerContainer: {
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#DEB887",
     paddingVertical: 10,
     flexDirection: "row",
     justifyContent: "space-around",
@@ -277,4 +277,5 @@ const styles = StyleSheet.create({
     height: 40, // Adjusted for better alignment
   },
 });
+
 
