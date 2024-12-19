@@ -8,8 +8,8 @@ import {
   Alert,
 } from "react-native";
 import axios from "axios";
-import { useDispatch } from 'react-redux';
-import { setUser } from '../redux/userSlice';
+import { useDispatch } from "react-redux";
+import { setUser } from "../redux/userSlice";
 export default function LoginScreen({ navigation }) {
   const [userInfo, setUserInfo] = useState({
     email: "",
@@ -45,11 +45,11 @@ export default function LoginScreen({ navigation }) {
           "https://mpe-backend-server.onrender.com/api/auth/login",
           userInfo
         );
-  
+
         const { user, token } = response.data;
-  
+
         dispatch(setUser({ user, token }));
-  
+
         Alert.alert("Success", "User login successfully!");
         setUserInfo({
           email: "",

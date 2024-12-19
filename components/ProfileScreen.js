@@ -1,30 +1,141 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+  FlatList,
+  Alert,
+} from "react-native";
 import { clearUser } from "../redux/userSlice";
 import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import { format } from "date-fns";
 
 const ProfileScreen = () => {
   const user = useSelector((state) => state.user.user);
+  const token = useSelector((state) => state.user.token);
 
-  // Local state to allow editing
+  // Local state for profile
   const [firstName, setFirstName] = useState(user?.firstName || "");
   const [lastName, setLastName] = useState(user?.lastName || "");
   const [email, setEmail] = useState(user?.email || "");
   const [cellphone, setCellphone] = useState(user?.cellphone || "");
+
+  // State for bookings
+  const [bookings, setBookings] = useState([]);
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBookingsModal, setShowBookingsModal] = useState(false);
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
   useEffect(() => {
     if (!user) {
       navigation.navigate("Login");
+    } else {
+      fetchBookings();
+      console.log(token);
     }
-  }, [user, navigation]); 
+  }, [user, navigation]);
 
-  const handleLogout = () => {
-    dispatch(clearUser()); 
+  const fetchBookings = async () => {
+    try {
+      const response = await axios.get(
+        "https://mpe-backend-server.onrender.com/api/actions/bookings",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setBookings(response.data);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+    }
   };
+
+  // Handle logout
+  const handleLogout = () => {
+    dispatch(clearUser());
+  };
+
+  const handleDeleteBooking = async (id) => {
+    // console.log("Booking ID:",id);
+
+    try {
+      await axios.delete(
+        `https://mpe-backend-server.onrender.com/api/actions/booking/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      Alert.alert("Success", "Booking deleted successfully");
+      fetchBookings();
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+    }
+  };
+
+  // Handle update booking
+  // const handleUpdateBooking = async (id, updatedData) => {
+  //   try {
+  //     await axios.put(
+  //       `https://mpe-backend-server.onrender.com/api/actions/booking/${id}`,
+  //       updatedData,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     Alert.alert("Success", "Booking updated successfully");
+  //     fetchBookings(); // Refresh bookings
+  //   } catch (error) {
+  //     console.error("Error updating booking:", error);
+  //   }
+  // };
+
+  const renderBookingItem = ({ item }) => {
+    const formattedDate = item.bookingSlot.dateIn
+      ? format(new Date(item.bookingSlot.dateIn.timestamp), "yyyy-MM-dd")
+      : "Date not set";
+  
+    const formattedTime = item.bookingSlot.timeIn
+      ? format(new Date(item.bookingSlot.timeIn), "hh:mm a")
+      : "Time not set";
+  
+    return (
+      <View style={styles.bookingItem}>
+        <Text style={styles.bookingText}>
+          {item.restaurant?.restaurantName || "Unknown Restaurant"} - {formattedDate} at {formattedTime}
+        </Text>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteBooking(item._id)}
+        >
+          <Text style={styles.deleteButtonText}>Delete</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() =>
+            navigation.navigate("BookingScreen", {
+              booking: item, 
+              isEditing: true, 
+            })
+          }
+        >
+          <Text style={styles.editButtonText}>Edit</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -43,64 +154,17 @@ const ProfileScreen = () => {
 
       {/* Content */}
       <View style={styles.content}>
-        {/* Form Section */}
+        {/* Profile Section */}
         <View style={styles.form}>
           <Text style={styles.label}>First name</Text>
-          <TextInput
-            style={styles.input}
-            value={firstName}
-            onChangeText={setFirstName}
-            placeholder="Enter your first name"
-            placeholderTextColor="#888"
-
-            editable={false}
-
-          />
-
+          <TextInput style={styles.input} value={firstName} editable={false} />
           <Text style={styles.label}>Last name</Text>
-          <TextInput
-            style={styles.input}
-            value={lastName}
-            onChangeText={setLastName}
-            placeholder="Enter your last name"
-            placeholderTextColor="#888"
-
-
-            editable={false}
-
-          />
-
+          <TextInput style={styles.input} value={lastName} editable={false} />
           <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="Enter your email"
-            placeholderTextColor="#888"
-
-
-            editable={false}
-
-          />
-
+          <TextInput style={styles.input} value={email} editable={false} />
           <Text style={styles.label}>Mobile number</Text>
-          <TextInput
-            style={styles.input}
-            value={cellphone}
-            onChangeText={setCellphone}
-            placeholder="Enter your mobile number"
-            placeholderTextColor="#888"
-
-
-            editable={false}
-
-          />
+          <TextInput style={styles.input} value={cellphone} editable={false} />
         </View>
-
-        {/* Update Button */}
-        <TouchableOpacity style={styles.updateButton}>
-          <Text style={styles.updateButtonText}>Update</Text>
-        </TouchableOpacity>
 
         {/* Log Out Button */}
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -117,10 +181,12 @@ const ProfileScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Booking History</Text>
-            <Text style={styles.bookingItem}>Booking 1: Completed</Text>
-            <Text style={styles.bookingItem}>Booking 2: Pending</Text>
-            <Text style={styles.bookingItem}>Booking 3: Uncompleted</Text>
+            <Text style={styles.modalTitle}>Your Bookings</Text>
+            <FlatList
+              data={bookings}
+              renderItem={renderBookingItem}
+              keyExtractor={(item) => item._id}
+            />
             <TouchableOpacity
               style={styles.closeButton}
               onPress={() => setShowBookingsModal(false)}
@@ -221,6 +287,13 @@ const styles = StyleSheet.create({
     color: "#333",
     marginBottom: 5,
   },
+  logoutButton: {
+    backgroundColor: "#f44336", // Red color for logout
+    padding: 15,
+    alignItems: "center",
+    borderRadius: 5,
+    marginTop: 20,
+  },
   closeButton: {
     backgroundColor: "#333",
     borderRadius: 5,
@@ -236,14 +309,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
-
-
-
-
-
-
-
-
-
-
-

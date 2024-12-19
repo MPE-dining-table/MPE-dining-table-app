@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -14,23 +14,65 @@ import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
 import { add, format, parseISO } from "date-fns";
+import { useSelector } from "react-redux";
+import axios from "axios";
 
 const BookingScreen = ({ route }) => {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [bookingSlot, setBookingSlot] = useState({
-    dateIn: null,
-    timeIn: null,
-    request: "",
-    pax: "",
+    dateIn: booking?.bookingSlot.dateIn || null,
+    timeIn: booking?.bookingSlot.timeIn || null,
+    request: booking?.bookingSlot.request || "",
+    pax: booking?.bookingSlot.pax || "",
   });
   const navigation = useNavigation();
 
   const { restaurant = {} } = route.params;
 
-  const handleAddPress = () => {
-    navigation.navigate("ConfirmationScreen", { restaurant, bookingSlot });
+  const { booking, isEditing } = route.params || {};
+
+  const token = useSelector((state) => state.user.token);
+
+  const handleConfirmBooking = async () => {
+    // Validation: Ensure required fields are not empty
+    if (!bookingSlot.dateIn || !bookingSlot.timeIn || !bookingSlot.pax) {
+      alert("Please complete all required fields: Date, Time, and Pax.");
+      return;
+    }
+
+    try {
+      if (isEditing && booking) {
+        // Call update API
+        await axios.put(
+          `https://mpe-backend-server.onrender.com/api/actions/booking/${booking._id}`,
+          { bookingSlot },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        alert("Booking updated successfully!");
+      } else {
+        // Normal booking logic
+        navigation.navigate("ConfirmationScreen", { bookingSlot, restaurant });
+      }
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      alert("Failed to update booking. Please try again.");
+    }
   };
+
+  useEffect(() => {
+    if (isEditing && booking) {
+      console.log("Editing booking:", booking);
+    }
+  }, [isEditing, booking]);
+
+  // const handleAddPress = () => {
+  //   navigation.navigate("ConfirmationScreen", { restaurant, bookingSlot });
+  // };
 
   const getTimes = () => {
     if (!bookingSlot.dateIn) return [];
@@ -49,11 +91,13 @@ const BookingScreen = ({ route }) => {
   };
 
   const times = getTimes();
-
   const formattedDate = bookingSlot.dateIn?.dateString || "N/A";
   const formattedTime = bookingSlot.timeIn
     ? format(new Date(bookingSlot.timeIn), "hh:mm a")
     : "N/A";
+  const dateStyle = !bookingSlot.dateIn ? styles.missingField : styles.field;
+  const timeStyle = !bookingSlot.timeIn ? styles.missingField : styles.field;
+  const paxStyle = !bookingSlot.pax ? styles.missingField : styles.field;
 
   // if (bookingSlot.dateIn && bookingSlot.timeIn) {
   //   console.log("booking info: ", bookingSlot);
@@ -65,7 +109,9 @@ const BookingScreen = ({ route }) => {
       <TouchableOpacity>
         <Text style={styles.backArrow}>{"<-"}</Text>
       </TouchableOpacity>
-
+      <Text style={styles.title}>
+        {isEditing ? "Edit Booking" : "New Booking"}
+      </Text>
       {/* Title */}
       <Text style={styles.title}>{restaurant.restaurantName}</Text>
 
@@ -73,7 +119,7 @@ const BookingScreen = ({ route }) => {
       <View style={styles.buttonContainer}>
         {/* Date */}
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, dateStyle]}
           onPress={() => setShowDatePicker(true)}
         >
           <Text style={styles.buttonText}>📅 Date</Text>
@@ -81,7 +127,7 @@ const BookingScreen = ({ route }) => {
         </TouchableOpacity>
 
         {/* Pax - Dropdown with Icon */}
-        <View style={styles.paxContainer}>
+        <View style={[styles.button, paxStyle]}>
           <Text style={styles.buttonText}>👥 Pax</Text>
           <RNPickerSelect
             onValueChange={(value) =>
@@ -102,7 +148,7 @@ const BookingScreen = ({ route }) => {
 
         {/* Time */}
         <TouchableOpacity
-          style={styles.button}
+          style={[styles.button, timeStyle]}
           onPress={() => setShowTimePicker(true)}
         >
           <Text style={styles.buttonText}>⏰ Time</Text>
@@ -111,19 +157,18 @@ const BookingScreen = ({ route }) => {
       </View>
 
       {/* Special Request */}
-      <Text style={styles.specialRequest}>Special Request</Text>
+      <Text style={styles.label}>Special Request</Text>
       <TextInput
-        style={styles.textInput}
-        placeholder="Type here..."
-        multiline
+        style={styles.input}
         value={bookingSlot.request}
         onChangeText={(text) =>
           setBookingSlot((prev) => ({ ...prev, request: text }))
         }
       />
-
-      {/* Confirm and Cancel */}
-      <TouchableOpacity style={styles.confirmButton} onPress={handleAddPress}>
+      <TouchableOpacity
+        style={styles.confirmButton}
+        onPress={handleConfirmBooking}
+      >
         <Text style={styles.confirmButtonText}>Confirm Booking</Text>
       </TouchableOpacity>
       <TouchableOpacity>
@@ -183,6 +228,14 @@ const styles = StyleSheet.create({
     color: "red",
     textAlign: "center",
     marginBottom: 20,
+  },
+  missingField: {
+    borderColor: "red",
+    borderWidth: 2,
+  },
+  field: {
+    borderColor: "gray",
+    borderWidth: 1,
   },
   buttonContainer: {
     flexDirection: "row",
