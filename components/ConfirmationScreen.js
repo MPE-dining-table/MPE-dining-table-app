@@ -1,100 +1,196 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, Animated, Easing } from 'react-native';
+import { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import { useSelector } from "react-redux";
+import { format } from "date-fns";
+import { Paystack } from "react-native-paystack-webview";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+export default function ConfirmationScreen({ route }) {
+  const [makingPayment, setMakingPayment] = useState(false);
+  const { restaurant = {}, bookingSlot = {} } = route.params;
+  const user = useSelector((state) => state.user.user);
+  const token = useSelector((state) => state.user.token);
+  const navigation = useNavigation();
 
-// Dummy image URLs for the plate and fork/knife
-const plateImage = 'https://example.com/plate.png'; // Replace with your image URL
-const forkImage = 'https://example.com/fork.png'; // Replace with your image URL
-const knifeImage = 'https://example.com/knife.png'; // Replace with your image URL
+  const formattedDate = bookingSlot.dateIn?.dateString || "N/A";
+  const formattedTime = bookingSlot.timeIn
+    ? format(new Date(bookingSlot.timeIn), "hh:mm a")
+    : "N/A";
 
-const ConfirmationScreen = () => {
-  const [move] = useState(new Animated.Value(0)); // Animation for moving fork and knife
+  const sendBookingData = async () => {
+    const bookingData = {
+      user,
+      restaurant,
+      bookingSlot,
+      totalPrice: restaurant.price,
+    };
 
-  // Function to animate the fork and knife
-  const animateLoader = () => {
-    Animated.loop(
-      Animated.timing(move, {
-        toValue: 1,
-        duration: 1500,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
+    try {
+      const response = await axios.post(
+        "https://mpe-backend-server.onrender.com/api/actions/booking",
+        bookingData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // const result = await response.json();
+
+      if (response.ok) {
+        console.log("Booking saved successfully:");
+        navigation.navigate("ProfileScreen");
+      } else {
+        console.error("Error saving booking:", result.message);
+      }
+    } catch (error) {
+      console.error("Error sending booking data:", error);
+    }
   };
 
-  useEffect(() => {
-    animateLoader(); // Start the animation when the component mounts
-  }, []);
-
-  const translateX = move.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 30], // Moving by 30 units on X axis
-  });
-
   return (
-    <View style={styles.container}>
-      {/* Confirmation message */}
-      <Text style={styles.confirmationText}>Your booking is confirmed!</Text>
-
-      {/* Plate of food */}
-      <View style={styles.plateContainer}>
-        <Image source={{ uri: plateImage }} style={styles.plateImage} />
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Booking Confirmation</Text>
       </View>
 
-      {/* Fork and Knife Loader */}
-      <View style={styles.loaderContainer}>
-        <Animated.Image
-          source={{ uri: forkImage }}
-          style={[styles.forkImage, { transform: [{ translateX }] }]}
-        />
-        <Animated.Image
-          source={{ uri: knifeImage }}
-          style={[styles.knifeImage, { transform: [{ translateX }] }]}
-        />
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Booking Details</Text>
+        <Text style={styles.text}>{restaurant.restaurantName}</Text>
+        <View style={styles.row}>
+          <Text style={styles.icon}>📅</Text>
+          <Text style={styles.text}>{formattedDate}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.icon}>⏰</Text>
+          <Text style={styles.text}>{formattedTime}</Text>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.icon}>👤</Text>
+          <Text style={styles.text}>{bookingSlot.pax}</Text>
+        </View>
+        <Text style={styles.total}>Total: R{restaurant.price}</Text>
       </View>
-    </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Your Details</Text>
+        <Text style={styles.text}>
+          {user.firstName} {user.lastName}
+        </Text>
+        <Text style={styles.text}>{user.cellphone}</Text>
+        <Text style={styles.text}>{user.email}</Text>
+      </View>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          setMakingPayment(true);
+        }}
+      >
+        <Text style={styles.buttonText}>Make Payment</Text>
+      </TouchableOpacity>
+
+      {makingPayment && (
+        <View style={{ flex: 1 }}>
+          <Paystack
+            paystackKey="pk_test_b6e75075e9a5601a259702db3b9a0a18d6552c37"
+            amount={restaurant.price}
+            billingEmail={user.email}
+            currency="ZAR"
+            activityIndicatorColor="green"
+            onCancel={(e) => {
+              console.log("Payment cancelled", e);
+              navigation.navigate("SearchScreen");
+            }}
+            onSuccess={(res) => {
+              sendBookingData();
+              console.log("Payment successful", res);
+            }}
+            autoStart={true}
+          />
+        </View>
+      )}
+    </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
+    // backgroundColor: "#f9f9f9",
+    padding: 16,
   },
-  confirmationText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#4CAF50', // Green color for confirmation
-    marginBottom: 20,
+  header: {
+    // backgroundColor: "#002244",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
   },
-  plateContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
+  headerText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
   },
-  plateImage: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
+  section: {
+    marginBottom: 16,
+    padding: 16,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
-  loaderContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 150,
-    marginTop: 20,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
-  forkImage: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
+  text: {
+    fontSize: 14,
+    marginBottom: 4,
+    color: "#333",
   },
-  knifeImage: {
-    width: 30,
-    height: 30,
-    resizeMode: 'contain',
+  total: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginTop: 8,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  icon: {
+    marginRight: 8,
+  },
+  radioButton: {
+    height: 16,
+    width: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#333",
+    marginRight: 8,
+  },
+  button: {
+    backgroundColor: "#e63946",
+    padding: 16,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
-
-export default ConfirmationScreen;

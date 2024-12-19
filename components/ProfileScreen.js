@@ -1,13 +1,8 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Modal,
-} from "react-native";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Modal } from "react-native";
+import { clearUser } from "../redux/userSlice";
+import { useNavigation } from "@react-navigation/native";
 
 const ProfileScreen = () => {
   const user = useSelector((state) => state.user.user);
@@ -18,6 +13,18 @@ const ProfileScreen = () => {
   const [email, setEmail] = useState(user?.email || "");
   const [cellphone, setCellphone] = useState(user?.cellphone || "");
   const [showBookingsModal, setShowBookingsModal] = useState(false);
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (!user) {
+      navigation.navigate("Login");
+    }
+  }, [user, navigation]); 
+
+  const handleLogout = () => {
+    dispatch(clearUser()); 
+  };
 
   return (
     <View style={styles.container}>
@@ -45,6 +52,9 @@ const ProfileScreen = () => {
             onChangeText={setFirstName}
             placeholder="Enter your first name"
             placeholderTextColor="#888"
+
+            editable={false}
+
           />
 
           <Text style={styles.label}>Last name</Text>
@@ -54,6 +64,10 @@ const ProfileScreen = () => {
             onChangeText={setLastName}
             placeholder="Enter your last name"
             placeholderTextColor="#888"
+
+
+            editable={false}
+
           />
 
           <Text style={styles.label}>Email</Text>
@@ -63,6 +77,10 @@ const ProfileScreen = () => {
             onChangeText={setEmail}
             placeholder="Enter your email"
             placeholderTextColor="#888"
+
+
+            editable={false}
+
           />
 
           <Text style={styles.label}>Mobile number</Text>
@@ -72,12 +90,21 @@ const ProfileScreen = () => {
             onChangeText={setCellphone}
             placeholder="Enter your mobile number"
             placeholderTextColor="#888"
+
+
+            editable={false}
+
           />
         </View>
 
         {/* Update Button */}
         <TouchableOpacity style={styles.updateButton}>
           <Text style={styles.updateButtonText}>Update</Text>
+        </TouchableOpacity>
+
+        {/* Log Out Button */}
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
       </View>
 
@@ -106,7 +133,6 @@ const ProfileScreen = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
