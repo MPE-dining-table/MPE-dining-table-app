@@ -6,12 +6,6 @@ import { useNavigation } from "@react-navigation/native";
 
 const ProfileScreen = () => {
   const user = useSelector((state) => state.user.user);
-
-  // Local state to allow editing
-  const [firstName, setFirstName] = useState(user?.firstName || "");
-  const [lastName, setLastName] = useState(user?.lastName || "");
-  const [email, setEmail] = useState(user?.email || "");
-  const [cellphone, setCellphone] = useState(user?.cellphone || "");
   const [showBookingsModal, setShowBookingsModal] = useState(false);
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -48,52 +42,37 @@ const ProfileScreen = () => {
           <Text style={styles.label}>First name</Text>
           <TextInput
             style={styles.input}
-            value={firstName}
-            onChangeText={setFirstName}
+            value={user?.firstName || ""}
             placeholder="Enter your first name"
             placeholderTextColor="#888"
-
             editable={false}
-
           />
 
           <Text style={styles.label}>Last name</Text>
           <TextInput
             style={styles.input}
-            value={lastName}
-            onChangeText={setLastName}
+            value={user?.lastName || ""}
             placeholder="Enter your last name"
             placeholderTextColor="#888"
-
-
             editable={false}
-
           />
 
           <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
-            value={email}
-            onChangeText={setEmail}
+            value={user?.email || ""}
             placeholder="Enter your email"
             placeholderTextColor="#888"
-
-
             editable={false}
-
           />
 
           <Text style={styles.label}>Mobile number</Text>
           <TextInput
             style={styles.input}
-            value={cellphone}
-            onChangeText={setCellphone}
+            value={user?.cellphone || ""}
             placeholder="Enter your mobile number"
             placeholderTextColor="#888"
-
-
             editable={false}
-
           />
         </View>
 
@@ -236,14 +215,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
-
-
-
-
-
-
-
-
-
-
-
