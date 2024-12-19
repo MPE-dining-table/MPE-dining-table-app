@@ -130,7 +130,7 @@ const SearchScreen = () => {
       <FlatList
         data={restaurants}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id.ObjectId}
         contentContainerStyle={styles.listContainer}
       />
     </View>

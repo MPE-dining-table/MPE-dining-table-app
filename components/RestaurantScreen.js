@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -8,39 +8,48 @@ import {
   Modal,
   TextInput,
   Image,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 
 const RestaurantScreen = ({ route }) => {
   const navigation = useNavigation();
+  const user = useSelector((state) => state.user.user); 
 
   // Add a fallback to avoid undefined errors
   const { restaurant = {} } = route.params || {
     restaurant: {
-      name: 'Unknown Restaurant',
-      location: 'No location provided',
-      phone: 'No phone available',
-      email: 'No email available',
-      description: 'No description available',
+      name: "Unknown Restaurant",
+      location: "No location provided",
+      phone: "No phone available",
+      email: "No email available",
+      description: "No description available",
     },
   };
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [reviewText, setReviewText] = useState('');
+  const [reviewText, setReviewText] = useState("");
+
+  const handleBookTablePress = () => {
+    if (user) {
+      navigation.navigate("BookingScreen", { restaurant });
+    } else {
+      navigation.navigate("Login"); 
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
-         <Image
-          source={{ uri:restaurant.image || "https://via.placeholder.com/150" }}
-          style={styles.image}
-        />
+      <Image
+        source={{ uri: restaurant.image || "https://via.placeholder.com/150" }}
+        style={styles.image}
+      />
       {/* Restaurant Name and Location */}
       <View style={styles.detailsContainer}>
         <Text style={styles.restaurantName}>{restaurant.restaurantName}</Text>
         <Text style={styles.location}>{restaurant.address}</Text>
         <Text style={styles.location}>{restaurant.cuisine}</Text>
-
       </View>
 
       {/* About and Review Links */}
@@ -79,7 +88,7 @@ const RestaurantScreen = ({ route }) => {
       {/* Book Table Button */}
       <TouchableOpacity
         style={styles.bookButton}
-        onPress={() => navigation.navigate('BookingScreen')}
+        onPress={handleBookTablePress}
       >
         <Text style={styles.bookButtonText}>Book Table</Text>
       </TouchableOpacity>

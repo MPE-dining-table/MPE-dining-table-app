@@ -19,7 +19,6 @@ export default function LoginScreen({ navigation }) {
 
   const dispatch = useDispatch();
 
-
   const handleChange = (key, value) => {
     setUserInfo({ ...userInfo, [key]: value });
   };

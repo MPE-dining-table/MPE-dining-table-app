@@ -52,7 +52,7 @@ const BookTableScreen = () => {
   };
 
   const handleImagePress = (restaurant) => {
-    console.log("Navigating to RestaurantScreen with:", restaurant); // Debugging
+    // console.log("Navigating to RestaurantScreen with:", restaurant);
     navigation.navigate("Restaurant", { restaurant });
   };
 
