@@ -1,201 +1,230 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, TextInput, StyleSheet, Platform } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import RNPickerSelect from 'react-native-picker-select';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Modal,
+  TextInput,
+  Image,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 
-const RestaurantScreen = () => {
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
-  const [time, setTime] = useState(new Date());
-  const [pax, setPax] = useState(null); // pax initially null
+const RestaurantScreen = ({ route }) => {
+  const navigation = useNavigation();
+
+  // Add a fallback to avoid undefined errors
+  const { restaurant = {} } = route.params || {
+    restaurant: {
+      name: 'Unknown Restaurant',
+      location: 'No location provided',
+      phone: 'No phone available',
+      email: 'No email available',
+      description: 'No description available',
+    },
+  };
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const [reviewText, setReviewText] = useState('');
 
   return (
-    <View style={styles.container}>
-      {/* Back Arrow */}
-      <TouchableOpacity>
-        <Text style={styles.backArrow}>{'<-'}</Text>
-      </TouchableOpacity>
+    <ScrollView style={styles.container}>
+         <Image
+          source={{ uri:restaurant.image || "https://via.placeholder.com/150" }}
+          style={styles.image}
+        />
+      {/* Restaurant Name and Location */}
+      <View style={styles.detailsContainer}>
+        <Text style={styles.restaurantName}>{restaurant.restaurantName}</Text>
+        <Text style={styles.location}>{restaurant.address}</Text>
+        <Text style={styles.location}>{restaurant.cuisine}</Text>
 
-      {/* Title */}
-      <Text style={styles.title}>Name of Restaurant</Text>
+      </View>
 
-      {/* Buttons */}
-      <View style={styles.buttonContainer}>
-        {/* Date */}
-        <TouchableOpacity style={styles.button} onPress={() => setShowDatePicker(true)}>
-          <Text style={styles.buttonText}>📅 Date</Text>
+      {/* About and Review Links */}
+      <View style={styles.linksContainer}>
+        <TouchableOpacity onPress={() => {}}>
+          <Text style={styles.linkText}>About</Text>
         </TouchableOpacity>
-
-        {/* Pax - Dropdown with Icon */}
-        <View style={styles.paxContainer}>
-          <Text style={styles.buttonText}>👥 Pax</Text>
-          <RNPickerSelect
-            onValueChange={(value) => setPax(value)} // Updates pax state when chosen
-            items={[
-              { label: '1 Person', value: '1' },
-              { label: '2 People', value: '2' },
-              { label: '3 People', value: '3' },
-              { label: '4 People', value: '4' },
-              { label: '5+ People', value: '5+' },
-            ]}
-            placeholder={{ label: 'Choose Pax', value: null }} // Placeholder for Pax
-            style={pickerSelectStyles}
-            value={pax} // Bind the picker to the pax state
-          />
-        </View>
-
-        {/* Time */}
-        <TouchableOpacity style={styles.button} onPress={() => setShowTimePicker(true)}>
-          <Text style={styles.buttonText}>⏰ Time</Text>
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <Text style={styles.linkText}>Review</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Special Request */}
-      <Text style={styles.specialRequest}>Special Request</Text>
-      <TextInput style={styles.textInput} placeholder="Type here..." multiline />
+      {/* Horizontal Line */}
+      <View style={styles.horizontalLine} />
 
-      {/* Confirm and Cancel */}
-      <TouchableOpacity style={styles.confirmButton}>
-        <Text style={styles.confirmButtonText}>Confirm Booking</Text>
+      {/* Contact Information */}
+      <View style={styles.contactContainer}>
+        <View style={styles.contactItem}>
+          <Ionicons name="call-outline" size={24} color="#555" />
+          <Text style={styles.contactText}>{restaurant.telephone}</Text>
+        </View>
+        <View style={styles.contactItem}>
+          <Ionicons name="mail-outline" size={24} color="#555" />
+          <Text style={styles.contactText}>{restaurant.email}</Text>
+        </View>
+      </View>
+
+      {/* Horizontal Line */}
+      <View style={styles.horizontalLine} />
+
+      {/* Restaurant Description */}
+      <View style={styles.descriptionContainer}>
+        <Text style={styles.descriptionText}>{restaurant.about}</Text>
+      </View>
+
+      {/* Book Table Button */}
+      <TouchableOpacity
+        style={styles.bookButton}
+        onPress={() => navigation.navigate('BookingScreen')}
+      >
+        <Text style={styles.bookButtonText}>Book Table</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
-        <Text style={styles.cancelText}>Cancel</Text>
-      </TouchableOpacity>
 
-      {/* Date Picker */}
-      {showDatePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(event, selectedDate) => {
-            setShowDatePicker(false);
-            if (selectedDate) setDate(selectedDate);
-          }}
-        />
-      )}
-
-      {/* Time Picker */}
-      {showTimePicker && (
-        <DateTimePicker
-          value={time}
-          mode="time"
-          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-          onChange={(event, selectedTime) => {
-            setShowTimePicker(false);
-            if (selectedTime) setTime(selectedTime);
-          }}
-        />
-      )}
-    </View>
+      {/* Review Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Leave a Review</Text>
+            <TextInput
+              style={styles.modalInput}
+              placeholder="Write your review here..."
+              multiline
+              value={reviewText}
+              onChangeText={(text) => setReviewText(text)}
+            />
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Submit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#7DA7F2',
-    padding: 20,
+    backgroundColor: '#fff',
+    marginTop: 30
   },
-  backArrow: {
-    fontSize: 20,
-    color: 'black',
-    marginBottom: 10,
+  detailsContainer: {
+    padding: 16,
   },
-  title: {
-    fontSize: 22,
-    color: 'red',
-    textAlign: 'center',
-    marginBottom: 20,
+  restaurantName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 10,
-    width: '30%',
-    alignItems: 'center',
-  },
-  buttonText: {
+  location: {
     fontSize: 16,
+    color: '#555',
+    marginTop: 8,
   },
-  paxContainer: {
+  linksContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginTop: 16,
+  },
+  linkText: {
+    fontSize: 16,
+    color: 'blue',
+    textDecorationLine: 'underline',
+  },
+  horizontalLine: {
+    borderBottomColor: '#ccc',
+    borderBottomWidth: 1,
+    marginVertical: 16,
+  },
+  contactContainer: {
+    paddingHorizontal: 16,
+  },
+  contactItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  contactText: {
+    fontSize: 16,
+    color: '#555',
+    marginLeft: 8,
+  },
+  descriptionContainer: {
+    paddingHorizontal: 16,
+    marginTop: 16,
+  },
+  descriptionText: {
+    fontSize: 16,
+    color: '#333',
+    lineHeight: 24,
+  },
+  bookButton: {
+    backgroundColor: '#F5DEB3', // Light brown
+    padding: 16,
+    alignItems: 'center',
+    margin: 16,
+    borderRadius: 8,
+  },
+  bookButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  modalContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '30%',
-    borderWidth: 1, // Adds a border to the Pax container
-    borderRadius: 10,
-    backgroundColor: '#f0f0f0', // Background color for the Pax box
-    padding: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  specialRequest: {
-    fontSize: 16,
+  modalContent: {
+    backgroundColor: '#fff',
+    width: '80%',
+    padding: 16,
+    borderRadius: 8,
+  },
+  modalTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 16,
   },
-  textInput: {
-    height: 100,
+  modalInput: {
     borderWidth: 1,
     borderColor: '#ccc',
-    backgroundColor: '#d3d3d3',
-    borderRadius: 10,
-    marginBottom: 20,
-    textAlignVertical: 'top',
-    padding: 10,
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 16,
+    minHeight: 100,
   },
-  confirmButton: {
-    backgroundColor: '#b08968',
-    padding: 15,
-    borderRadius: 10,
+  modalButton: {
+    backgroundColor: '#F5DEB3',
+    padding: 12,
     alignItems: 'center',
+    borderRadius: 8,
   },
-  confirmButtonText: {
-    color: 'white',
+  modalButtonText: {
     fontSize: 16,
     fontWeight: 'bold',
+    color: '#333',
   },
-  cancelText: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 10,
-    fontSize: 16,
+  image: {
+    width: "100%",
+    height: 200,
+    borderRadius: 10,
+    resizeMode: "cover",
   },
 });
 
-const pickerSelectStyles = {
-  inputIOS: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 10,
-    textAlign: 'center',
-    width: '100%', // Ensures dropdown fills container width
-  },
-  inputAndroid: {
-    backgroundColor: '#f0f0f0',
-    padding: 10,
-    borderRadius: 10,
-    textAlign: 'center',
-    width: '100%', // Ensures dropdown fills container width
-  },
-};
-
 export default RestaurantScreen;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
