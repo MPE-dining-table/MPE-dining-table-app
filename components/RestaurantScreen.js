@@ -15,7 +15,7 @@ import { useSelector } from "react-redux";
 
 const RestaurantScreen = ({ route }) => {
   const navigation = useNavigation();
-  const user = useSelector((state) => state.user.user); 
+  const user = useSelector((state) => state.user.user);
 
   // Add a fallback to avoid undefined errors
   const { restaurant = {} } = route.params || {
@@ -35,7 +35,7 @@ const RestaurantScreen = ({ route }) => {
     if (user) {
       navigation.navigate("BookingScreen", { restaurant });
     } else {
-      navigation.navigate("Login"); 
+      navigation.navigate("Login");
     }
   };
 
@@ -54,9 +54,11 @@ const RestaurantScreen = ({ route }) => {
 
       {/* About and Review Links */}
       <View style={styles.linksContainer}>
-        <TouchableOpacity onPress={() => {}}>
+        {/* About Link */}
+        <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={styles.linkText}>About</Text>
         </TouchableOpacity>
+        {/* Review Link */}
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Text style={styles.linkText}>Review</Text>
         </TouchableOpacity>
@@ -93,6 +95,37 @@ const RestaurantScreen = ({ route }) => {
         <Text style={styles.bookButtonText}>Book Table</Text>
       </TouchableOpacity>
 
+      {/* About Modal */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>About the Restaurant</Text>
+            <Text style={styles.modalText}>African Super Food</Text>
+            <Text style={styles.modalText}>Served Every Day Since 1995</Text>
+            <Text style={styles.modalText}>
+              Our mission is to provide healthy, delicious, and authentic African cuisine to our customers.
+            </Text>
+            <Text style={styles.modalText}>
+              We source our ingredients locally to ensure freshness and sustainability.
+            </Text>
+            <Text style={styles.modalText}>
+              Join us to experience the rich and diverse flavors of Africa!
+            </Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.modalButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       {/* Review Modal */}
       <Modal
         animationType="slide"
@@ -126,35 +159,35 @@ const RestaurantScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    marginTop: 30
+    backgroundColor: "#fff",
+    marginTop: 30,
   },
   detailsContainer: {
     padding: 16,
   },
   restaurantName: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   location: {
     fontSize: 16,
-    color: '#555',
+    color: "#555",
     marginTop: 8,
   },
   linksContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     marginTop: 16,
   },
   linkText: {
     fontSize: 16,
-    color: 'blue',
-    textDecorationLine: 'underline',
+    color: "blue",
+    textDecorationLine: "underline",
   },
   horizontalLine: {
-    borderBottomColor: '#ccc',
+    borderBottomColor: "#ccc",
     borderBottomWidth: 1,
     marginVertical: 16,
   },
@@ -162,13 +195,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   contactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 8,
   },
   contactText: {
     fontSize: 16,
-    color: '#555',
+    color: "#555",
     marginLeft: 8,
   },
   descriptionContainer: {
@@ -177,56 +210,62 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: 16,
-    color: '#333',
+    color: "#333",
     lineHeight: 24,
   },
   bookButton: {
-    backgroundColor: '#F5DEB3', // Light brown
+    backgroundColor: "#F5DEB3", // Light brown
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
     margin: 16,
     borderRadius: 8,
   },
   bookButtonText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   modalContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    backgroundColor: '#fff',
-    width: '80%',
+    backgroundColor: "#fff",
+    width: "80%",
     padding: 16,
     borderRadius: 8,
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
+  },
+  modalText: {
+    fontSize: 16,
+    color: "#333",
+    lineHeight: 24,
+    marginBottom: 8,
   },
   modalInput: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 8,
     padding: 8,
     marginBottom: 16,
     minHeight: 100,
   },
   modalButton: {
-    backgroundColor: '#F5DEB3',
+    backgroundColor: "#F5DEB3",
     padding: 12,
-    alignItems: 'center',
+    alignItems: "center",
     borderRadius: 8,
   },
   modalButtonText: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   image: {
     width: "100%",
