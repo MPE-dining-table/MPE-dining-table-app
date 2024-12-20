@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Poppins_400Regular } from '@expo-google-fonts/poppins';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -9,6 +9,8 @@ export default function HomeScreen({ navigation }) {
   const [fontsLoaded] = useFonts({
     Poppins_400Regular,
   });
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track if user is logged in
 
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
@@ -30,16 +32,6 @@ export default function HomeScreen({ navigation }) {
         {/* Logo */}
         <Image source={mpelogo} style={styles.logo} />
 
-        {/* Search Input
-        <View style={styles.inputContainer}>
-          <Icon name="search" size={20} color="#555" style={styles.searchIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Search Restaurants"
-            placeholderTextColor="#555"
-          />
-        </View> */}
-
         {/* Book Table Button */}
         <TouchableOpacity
           style={styles.button}
@@ -49,21 +41,23 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.buttonText}>Book Table</Text>
         </TouchableOpacity>
 
-        {/* Split Buttons */}
-        <View style={styles.splitButton}>
-          <TouchableOpacity
-            style={[styles.smallButton, styles.leftButton]}
-            onPress={() => navigation.navigate('Signup')}
-          >
-            <Text style={styles.splitButtonText}>Signup</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.smallButton, styles.rightButton]}
-            onPress={() => navigation.navigate('Login')}
-          >
-            <Text style={styles.splitButtonText}>Login</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Conditional rendering of Split Buttons */}
+        {!isLoggedIn && (
+          <View style={styles.splitButton}>
+            <TouchableOpacity
+              style={[styles.smallButton, styles.leftButton]}
+              onPress={() => navigation.navigate('Signup')}
+            >
+              <Text style={styles.splitButtonText}>Signup</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.smallButton, styles.rightButton]}
+              onPress={() => navigation.navigate('Login')}
+            >
+              <Text style={styles.splitButtonText}>Login</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -97,29 +91,6 @@ const styles = StyleSheet.create({
     height: 300,
     marginBottom: 30,
   },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 30,
-    width: '80%',
-    marginBottom: 30,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  searchIcon: {
-    padding: 15,
-  },
-  input: {
-    flex: 1,
-    padding: 10,
-    fontFamily: 'Poppins_400Regular',
-    fontSize: 16,
-    color: '#333',
-  },
   button: {
     backgroundColor: '#FF6347', // Tomato color for a modern look
     paddingVertical: 15,
@@ -136,9 +107,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  bookTableButton: {
-    backgroundColor: 'navy', // Navy blue color for the Book Table button
   },
   calendarIcon: {
     marginRight: 10,

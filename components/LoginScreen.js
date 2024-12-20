@@ -64,6 +64,7 @@ export default function LoginScreen({ navigation }) {
         dispatch(setUser({ user, token }));
 
         Alert.alert("Success", "User login successfully!");
+        navigation.navigate('BookTable');
         setUserInfo({
           email: "",
           password: "",
