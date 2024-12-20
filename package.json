@@ -39,8 +39,10 @@
     "react-native": "^0.76.5",
     "react-native-animatable": "^1.4.0",
     "react-native-calendars": "^1.1307.0",
+    "react-native-checkbox": "^2.0.0",
     "react-native-gesture-handler": "^2.21.2",
     "react-native-linear-gradient": "^2.8.3",
+    "react-native-maps": "1.18.0",
     "react-native-modal": "^13.0.1",
     "react-native-modal-datetime-picker": "^18.0.0",
     "react-native-paystack-webview": "^4.3.1",
@@ -52,8 +54,7 @@
     "react-native-svg": "^15.10.1",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "react-redux": "^9.2.0",
-    "react-native-maps": "1.18.0"
+    "react-redux": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
