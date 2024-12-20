@@ -10,13 +10,11 @@ import {
   Image,
   Linking,
   Alert,
-  Button,
   ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
-import Slider from "@react-native-community/slider";
 import axios from "axios";
 import MapView, { Marker } from "react-native-maps";
 
@@ -154,7 +152,13 @@ const RestaurantScreen = ({ route }) => {
 
       <View style={styles.detailsContainer}>
         <Text style={styles.restaurantName}>{restaurant.restaurantName}</Text>
-        <Button title="Add to Favorites" onPress={handleAddToFavorites} />
+        <TouchableOpacity
+          style={styles.favoriteButton}
+          onPress={handleAddToFavorites}
+        >
+          <Ionicons name="heart" size={24} color="#FF6347" />
+          <Text style={styles.favoriteButtonText}>Add to Favorites</Text>
+        </TouchableOpacity>
 
         <Text style={styles.location}>{restaurant.address}</Text>
         <Text style={styles.cuisine}>{restaurant.cuisine}</Text>
@@ -215,6 +219,7 @@ const RestaurantScreen = ({ route }) => {
           </MapView>
         )
       )}
+
       <TouchableOpacity
         style={styles.bookButton}
         onPress={handleBookTablePress}
@@ -286,12 +291,11 @@ const RestaurantScreen = ({ route }) => {
               <Text style={styles.modalButtonText}>Submit Review</Text>
             </TouchableOpacity>
 
-            {/* Close Button */}
             <TouchableOpacity
-              style={styles.modalCloseButton}
+              style={styles.modalButton}
               onPress={() => setReviewModalVisible(false)}
             >
-              <Text style={styles.modalCloseButtonText}>Close</Text>
+              <Text style={styles.modalButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -300,36 +304,112 @@ const RestaurantScreen = ({ route }) => {
   );
 };
 
+// Styles
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff", marginTop: 30 },
-  detailsContainer: { padding: 16 },
-  restaurantName: { fontSize: 24, fontWeight: "bold", color: "#333" },
-  location: { fontSize: 16, color: "#555", marginTop: 8 },
-  cuisine: { fontSize: 16, color: "#555", marginTop: 8 },
-  linksContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    marginTop: 16,
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
   },
-  linkText: { fontSize: 16, color: "blue", textDecorationLine: "underline" },
-  horizontalLine: {
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
+  image: {
+    width: "100%",
+    height: 200,
+    resizeMode: "cover",
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  detailsContainer: {
     marginVertical: 16,
   },
-  contactContainer: { paddingHorizontal: 16 },
-  contactItem: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
-  contactText: { fontSize: 16, color: "#555", marginLeft: 8 },
-  contactLink: { color: "blue" }, // Set contact text color to blue
-  bookButton: {
-    backgroundColor: "#F5DEB3",
-    padding: 16,
-    alignItems: "center",
-    margin: 16,
-    borderRadius: 8,
+  restaurantName: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#333",
   },
-  bookButtonText: { fontSize: 18, fontWeight: "bold", color: "#333" },
+  favoriteButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 8,
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  favoriteButtonText: {
+    fontSize: 16,
+    color: "#FF6347",
+    marginLeft: 8,
+  },
+  location: {
+    fontSize: 16,
+    color: "#777",
+    marginVertical: 4,
+  },
+  cuisine: {
+    fontSize: 16,
+    color: "#444",
+  },
+  linksContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginVertical: 16,
+  },
+  linkText: {
+    fontSize: 16,
+    color: "#007BFF",
+    fontWeight: "bold",
+  },
+  horizontalLine: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+    marginVertical: 16,
+  },
+  contactContainer: {
+    marginVertical: 16,
+  },
+  contactItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  contactText: {
+    fontSize: 16,
+    marginLeft: 8,
+    color: "#555",
+  },
+  contactLink: {
+    color: "#007BFF",
+  },
+  activityIndicator: {
+    marginVertical: 16,
+  },
+  map: {
+    width: "100%",
+    height: 250,
+    borderRadius: 12,
+  },
+  bookButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginVertical: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  bookButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    textAlign: "center",
+    fontWeight: "bold",
+  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -338,38 +418,62 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     backgroundColor: "#fff",
-    width: "90%",
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 12,
+    width: "80%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
-  modalText: { fontSize: 16, color: "#333", marginBottom: 8 },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 16,
+    color: "#333",
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 16,
+    color: "#555",
+  },
+  modalButton: {
+    backgroundColor: "#007BFF",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  modalButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   reviewInput: {
     borderWidth: 1,
     borderColor: "#ccc",
+    padding: 8,
     borderRadius: 8,
-    padding: 10,
-    height: 100,
-    marginTop: 8,
     marginBottom: 16,
-    textAlignVertical: "top",
+    height: 100,
+    backgroundColor: "#fff",
   },
-  modalButton: {
-    backgroundColor: "#F5DEB3",
-    padding: 12,
-    alignItems: "center",
-    borderRadius: 8,
+  ratingLabel: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: "#333",
   },
-  modalButtonText: { fontSize: 16, fontWeight: "bold", color: "#333" },
-  modalCloseButton: { marginTop: 8 },
-  modalCloseButtonText: { fontSize: 14, color: "red" },
-  starContainer: { flexDirection: "row", marginVertical: 8 },
-  ratingLabel: { fontSize: 16, fontWeight: "bold", marginTop: 8 },
-  image: { width: "100%", height: 200, resizeMode: "cover" },
-  map: {
-    width: "100%",
-    height: 300,
-    marginTop: 20,
+  starContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
 });
 

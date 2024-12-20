@@ -264,11 +264,11 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "white",
     padding: 15,
   },
   header: {
-    backgroundColor: "#DEB887", // Light brown color
+    backgroundColor: "#FF6347", // Light brown color
     paddingVertical: 20,
     alignItems: "center",
     shadowColor: "#000",
@@ -277,6 +277,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     marginBottom: 15,
+    borderRadius:25
   },
   headerText: {
     color: "#FFF",

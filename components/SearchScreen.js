@@ -33,7 +33,7 @@ const SearchScreen = () => {
     "Grill",
     "Italian",
     "Japanese",
-    "Continental"
+    "Continental",
   ];
 
   const fetchRes = async () => {
@@ -42,34 +42,33 @@ const SearchScreen = () => {
       const response = await axios.get(
         "https://mpe-backend-server.onrender.com/api/actions/fetch-restuarents"
       );
-      
+
       console.log("Raw restaurant data:", response.data.restuarents[0]);
-      const sanitizedRestaurants = response.data.restuarents.map((restaurant) => {
-        // Ensure cuisine is always an array
-        let cuisineArray = [];
-        
-        if (typeof restaurant.cuisine === 'string') {
-          // If it's a string, split it in case it's comma-separated
-          cuisineArray = restaurant.cuisine.split(',').map(c => c.trim().toLowerCase());
-        } else if (Array.isArray(restaurant.cuisine)) {
-          // If it's already an array, just normalize it
-          cuisineArray = restaurant.cuisine.map(c => 
-            typeof c === 'string' ? c.trim().toLowerCase() : ''
-          ).filter(c => c); // Remove any empty strings
+      const sanitizedRestaurants = response.data.restuarents.map(
+        (restaurant) => {
+          // Ensure cuisine is always an array
+          let cuisineArray = [];
+
+          if (typeof restaurant.cuisine === "string") {
+            // If it's a string, split it in case it's comma-separated
+            cuisineArray = restaurant.cuisine
+              .split(",")
+              .map((c) => c.trim().toLowerCase());
+          } else if (Array.isArray(restaurant.cuisine)) {
+            // If it's already an array, just normalize it
+            cuisineArray = restaurant.cuisine
+              .map((c) => (typeof c === "string" ? c.trim().toLowerCase() : ""))
+              .filter((c) => c); // Remove any empty strings
+          }
+
+          const sanitized = {
+            ...restaurant,
+            cuisine: cuisineArray,
+          };
+
+          return sanitized;
         }
-        
-        const sanitized = {
-          ...restaurant,
-          cuisine: cuisineArray,
-        };
-        
-        // console.log("Sanitized Restaurant:", {
-        //   name: sanitized.restaurantName,
-        //   cuisine: sanitized.cuisine
-        // });
-        
-        return sanitized;
-      });
+      );
 
       setRestaurants(sanitizedRestaurants);
     } catch (error) {
@@ -92,26 +91,26 @@ const SearchScreen = () => {
 
       // More forgiving cuisine matching
       const cuisineToMatch = selectedCuisine.toLowerCase();
-      const matchesCuisine = !selectedCuisine || restaurant.cuisine.some(c => 
-        c.toLowerCase().includes(cuisineToMatch) || 
-        cuisineToMatch.includes(c.toLowerCase())
-      );
-     return matchesSearch && matchesCuisine;
+      const matchesCuisine =
+        !selectedCuisine ||
+        restaurant.cuisine.some(
+          (c) =>
+            c.toLowerCase().includes(cuisineToMatch) ||
+            cuisineToMatch.includes(c.toLowerCase())
+        );
+      return matchesSearch && matchesCuisine;
     });
 
-    // console.log("Filtered Results:", filtered.length);
     setFilteredRestaurants(filtered);
   }, [searchQuery, selectedCuisine, restaurants]);
 
   const handleCuisineSelect = (cuisine) => {
-    // console.log("Cuisine Selected:", cuisine);
     setSelectedCuisine(cuisine === selectedCuisine ? "" : cuisine);
   };
+
   const handleSearch = (text) => {
     setSearchQuery(text);
   };
-
-
 
   const handleLocationPress = (location) => {
     alert(`Restaurant Location: ${location}`);
@@ -151,7 +150,11 @@ const SearchScreen = () => {
   );
 
   if (loading) {
-    return <ActivityIndicator size="large" color="#FF6347" />;
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FF6347" />
+      </View>
+    );
   }
 
   return (
@@ -184,7 +187,14 @@ const SearchScreen = () => {
                 selectedCuisine === cuisine && styles.selectedCuisine,
               ]}
             >
-              <Text style={styles.cuisineText}>{cuisine}</Text>
+              <Text
+                style={[
+                  styles.cuisineText,
+                  selectedCuisine === cuisine && styles.selectedCuisineText,
+                ]}
+              >
+                {cuisine}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -205,6 +215,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F5F5F5", // Light gray background
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
   },
   searchContainer: {
     flexDirection: "row",
@@ -293,6 +309,7 @@ const styles = StyleSheet.create({
   cuisineLabel: {
     fontSize: 16,
     fontWeight: "bold",
+    color: "#333",
   },
   cuisinesList: {
     flexDirection: "row",
@@ -302,15 +319,24 @@ const styles = StyleSheet.create({
   cuisineItem: {
     marginRight: 10,
     marginBottom: 10,
-    padding: 5,
+    padding: 10,
     backgroundColor: "#eee",
-    borderRadius: 5,
+    borderRadius: 20,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   selectedCuisine: {
     backgroundColor: "#FF6347",
   },
   cuisineText: {
     color: "#333",
+    fontSize: 14,
+  },
+  selectedCuisineText: {
+    color: "white",
   },
 });
 
