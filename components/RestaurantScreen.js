@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,12 +11,14 @@ import {
   Linking,
   Alert,
   Button,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSelector } from "react-redux";
 import Slider from "@react-native-community/slider";
 import axios from "axios";
+import MapView, { Marker } from "react-native-maps";
 
 const StarRating = ({ rating, setRating }) => {
   return (
@@ -51,6 +53,8 @@ const RestaurantScreen = ({ route }) => {
     },
   };
 
+  const [coordinates, setCoordinates] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [aboutModalVisible, setAboutModalVisible] = useState(false);
   const [reviewModalVisible, setReviewModalVisible] = useState(false);
 
@@ -60,13 +64,37 @@ const RestaurantScreen = ({ route }) => {
   const [serviceRating, setServiceRating] = useState(0);
   const [staffRating, setStaffRating] = useState(0);
 
+  const fetchCoordinates = async (address) => {
+    try {
+      const response = await axios.get(
+        `https://geocode.xyz/${address}?json=1&auth=114163668033352e15780839x4681`
+      );
+      const data = response.data;
+
+      if (data.error) {
+        console.error("Geocoding error:", data.error.description);
+      } else {
+        const { latt, longt } = data;
+        setCoordinates({
+          latitude: parseFloat(latt),
+          longitude: parseFloat(longt),
+        });
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAddToFavorites = async () => {
     try {
       await axios.post(
         "https://mpe-backend-server.onrender.com/api/actions/add-favorites",
-        { 
-          ...restaurant 
-        },        {
+        {
+          ...restaurant,
+        },
+        {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -110,6 +138,12 @@ const RestaurantScreen = ({ route }) => {
   const openEmail = () => {
     Linking.openURL(`mailto:${restaurant.email}`);
   };
+
+  useEffect(() => {
+    if (restaurant.address && restaurant.address !== "No location provided") {
+      fetchCoordinates(restaurant.address);
+    }
+  }, [restaurant.address]);
 
   return (
     <ScrollView style={styles.container}>
@@ -156,7 +190,31 @@ const RestaurantScreen = ({ route }) => {
 
       <View style={styles.horizontalLine} />
 
-      {/* Book Table Button */}
+      {loading ? (
+        <ActivityIndicator
+          size="large"
+          color="#0000ff"
+          style={styles.activityIndicator}
+        />
+      ) : (
+        coordinates && (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: coordinates.latitude,
+              longitude: coordinates.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+            <Marker
+              coordinate={coordinates}
+              title={restaurant.name}
+              description={restaurant.address}
+            />
+          </MapView>
+        )
+      )}
       <TouchableOpacity
         style={styles.bookButton}
         onPress={handleBookTablePress}
@@ -173,7 +231,9 @@ const RestaurantScreen = ({ route }) => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>About {restaurant.name}</Text>
+            <Text style={styles.modalTitle}>
+              About {restaurant.restaurantName}
+            </Text>
             <Text style={styles.modalText}>{restaurant.about}</Text>
             <TouchableOpacity
               style={styles.modalButton}
@@ -306,6 +366,11 @@ const styles = StyleSheet.create({
   starContainer: { flexDirection: "row", marginVertical: 8 },
   ratingLabel: { fontSize: 16, fontWeight: "bold", marginTop: 8 },
   image: { width: "100%", height: 200, resizeMode: "cover" },
+  map: {
+    width: "100%",
+    height: 300,
+    marginTop: 20,
+  },
 });
 
 export default RestaurantScreen;

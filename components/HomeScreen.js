@@ -43,7 +43,7 @@ export default function HomeScreen({ navigation }) {
         {/* Book Table Button */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('BookTable')}
+          onPress={() => navigation.navigate('Search')}
         >
           <Icon name="calendar" size={20} color="white" style={styles.calendarIcon} />
           <Text style={styles.buttonText}>Book Table</Text>

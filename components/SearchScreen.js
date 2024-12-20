@@ -17,8 +17,24 @@ import axios from "axios";
 const SearchScreen = () => {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCuisine, setSelectedCuisine] = useState("");
   const [restaurants, setRestaurants] = useState([]);
+  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const cuisinesList = [
+    "African",
+    "Fast Foods",
+    "Vegetarian",
+    "Seafood",
+    "Indian",
+    "Mediterranean",
+    "Healthy",
+    "Grill",
+    "Italian",
+    "Japanese",
+    "Continental"
+  ];
 
   const fetchRes = async () => {
     setLoading(true);
@@ -26,9 +42,38 @@ const SearchScreen = () => {
       const response = await axios.get(
         "https://mpe-backend-server.onrender.com/api/actions/fetch-restuarents"
       );
-      setRestaurants(response.data.restuarents); // Set restaurants data
+      
+      console.log("Raw restaurant data:", response.data.restuarents[0]);
+      const sanitizedRestaurants = response.data.restuarents.map((restaurant) => {
+        // Ensure cuisine is always an array
+        let cuisineArray = [];
+        
+        if (typeof restaurant.cuisine === 'string') {
+          // If it's a string, split it in case it's comma-separated
+          cuisineArray = restaurant.cuisine.split(',').map(c => c.trim().toLowerCase());
+        } else if (Array.isArray(restaurant.cuisine)) {
+          // If it's already an array, just normalize it
+          cuisineArray = restaurant.cuisine.map(c => 
+            typeof c === 'string' ? c.trim().toLowerCase() : ''
+          ).filter(c => c); // Remove any empty strings
+        }
+        
+        const sanitized = {
+          ...restaurant,
+          cuisine: cuisineArray,
+        };
+        
+        // console.log("Sanitized Restaurant:", {
+        //   name: sanitized.restaurantName,
+        //   cuisine: sanitized.cuisine
+        // });
+        
+        return sanitized;
+      });
+
+      setRestaurants(sanitizedRestaurants);
     } catch (error) {
-      console.log(error);
+      console.log("Fetch Error:", error);
       Alert.alert("Error", "Failed to fetch restaurants.");
     } finally {
       setLoading(false);
@@ -39,10 +84,34 @@ const SearchScreen = () => {
     fetchRes();
   }, []);
 
+  useEffect(() => {
+    const filtered = restaurants.filter((restaurant) => {
+      const matchesSearch = restaurant.restaurantName
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+      // More forgiving cuisine matching
+      const cuisineToMatch = selectedCuisine.toLowerCase();
+      const matchesCuisine = !selectedCuisine || restaurant.cuisine.some(c => 
+        c.toLowerCase().includes(cuisineToMatch) || 
+        cuisineToMatch.includes(c.toLowerCase())
+      );
+     return matchesSearch && matchesCuisine;
+    });
+
+    // console.log("Filtered Results:", filtered.length);
+    setFilteredRestaurants(filtered);
+  }, [searchQuery, selectedCuisine, restaurants]);
+
+  const handleCuisineSelect = (cuisine) => {
+    // console.log("Cuisine Selected:", cuisine);
+    setSelectedCuisine(cuisine === selectedCuisine ? "" : cuisine);
+  };
   const handleSearch = (text) => {
     setSearchQuery(text);
-    // Implement search logic here if needed
   };
+
+
 
   const handleLocationPress = (location) => {
     alert(`Restaurant Location: ${location}`);
@@ -52,42 +121,16 @@ const SearchScreen = () => {
     navigation.navigate("Restaurant", { restaurant });
   };
 
-  const handleImagePress = (restaurant) => {
-    // Show an alert asking to sign up or log in
-    Alert.alert(
-      "Authentication Required",
-      "Please sign up or log in to continue.",
-      [
-        {
-          text: "Sign Up",
-          onPress: () => navigation.navigate("SignupScreen"), // Navigate to SignupScreen
-        },
-        {
-          text: "Log In",
-          onPress: () => navigation.navigate("LoginScreen"), // Navigate to LoginScreen
-        },
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-      ],
-      { cancelable: false }
-    );
-  };
-
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
-      <TouchableOpacity
-        accessibilityLabel={`View details of ${item.restuarentName}`}
-        onPress={() => handleAddPress(item)}
-      >
+      <TouchableOpacity onPress={() => handleAddPress(item)}>
         <Image
           source={{ uri: item.image || "https://via.placeholder.com/150" }}
           style={styles.image}
         />
       </TouchableOpacity>
       <View style={styles.textContainer}>
-        <Text style={styles.restaurantName}>{item.restuarentName}</Text>
+        <Text style={styles.restaurantName}>{item.restaurantName}</Text>
       </View>
       <View style={styles.locationContainer}>
         <TouchableOpacity
@@ -127,10 +170,30 @@ const SearchScreen = () => {
           onChangeText={handleSearch}
         />
       </View>
+
+      {/* Cuisines Filter */}
+      <View style={styles.cuisinesContainer}>
+        <Text style={styles.cuisineLabel}>Filter by Cuisine:</Text>
+        <View style={styles.cuisinesList}>
+          {cuisinesList.map((cuisine, index) => (
+            <TouchableOpacity
+              key={index}
+              onPress={() => handleCuisineSelect(cuisine)}
+              style={[
+                styles.cuisineItem,
+                selectedCuisine === cuisine && styles.selectedCuisine,
+              ]}
+            >
+              <Text style={styles.cuisineText}>{cuisine}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
       <FlatList
-        data={restaurants}
+        data={filteredRestaurants}
         renderItem={renderItem}
-        keyExtractor={(item) => item._id.ObjectId}
+        keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContainer}
       />
     </View>
@@ -223,6 +286,31 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
+  },
+  cuisinesContainer: {
+    marginBottom: 20,
+  },
+  cuisineLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  cuisinesList: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 5,
+  },
+  cuisineItem: {
+    marginRight: 10,
+    marginBottom: 10,
+    padding: 5,
+    backgroundColor: "#eee",
+    borderRadius: 5,
+  },
+  selectedCuisine: {
+    backgroundColor: "#FF6347",
+  },
+  cuisineText: {
+    color: "#333",
   },
 });
 
