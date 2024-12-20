@@ -70,10 +70,6 @@ const BookingScreen = ({ route }) => {
     }
   }, [isEditing, booking]);
 
-  // const handleAddPress = () => {
-  //   navigation.navigate("ConfirmationScreen", { restaurant, bookingSlot });
-  // };
-
   const getTimes = () => {
     if (!bookingSlot.dateIn) return [];
 
@@ -99,21 +95,15 @@ const BookingScreen = ({ route }) => {
   const timeStyle = !bookingSlot.timeIn ? styles.missingField : styles.field;
   const paxStyle = !bookingSlot.pax ? styles.missingField : styles.field;
 
-  // if (bookingSlot.dateIn && bookingSlot.timeIn) {
-  //   console.log("booking info: ", bookingSlot);
-  // }
-
   return (
     <View style={styles.container}>
-      {/* Back Arrow */}
-      <TouchableOpacity>
-        <Text style={styles.backArrow}>{"<-"}</Text>
-      </TouchableOpacity>
+     
+
+      {/* Title */}
       <Text style={styles.title}>
         {isEditing ? "Edit Booking" : "New Booking"}
       </Text>
-      {/* Title */}
-      <Text style={styles.title}>{restaurant.restaurantName}</Text>
+      <Text style={styles.restaurantName}>{restaurant.restaurantName}</Text>
 
       {/* Buttons */}
       <View style={styles.buttonContainer}>
@@ -164,25 +154,27 @@ const BookingScreen = ({ route }) => {
         onChangeText={(text) =>
           setBookingSlot((prev) => ({ ...prev, request: text }))
         }
+        multiline
+        numberOfLines={4}
       />
+
+      {/* Confirm Button */}
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={handleConfirmBooking}
       >
         <Text style={styles.confirmButtonText}>Confirm Booking</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
+
+      {/* Cancel Button */}
+      <TouchableOpacity onPress={() => navigation.goBack()}>
         <Text style={styles.cancelText}>Cancel</Text>
       </TouchableOpacity>
 
       {/* Date Picker */}
       {showDatePicker && (
         <Calendar
-          style={{
-            borderWidth: 1,
-            borderColor: "gray",
-            height: 350,
-          }}
+          style={styles.calendar}
           current={"2024-12-12"}
           minDate={format(new Date(), "yyyy-MM-dd")}
           onDayPress={(day) => {
@@ -196,15 +188,16 @@ const BookingScreen = ({ route }) => {
       {showTimePicker && (
         <ScrollView contentContainerStyle={styles.timeContainer}>
           {times.map((time, i) => (
-            <Button
+            <TouchableOpacity
               key={`time-${i}`}
-              title={format(time, "kk:mm")}
+              style={styles.timeButton}
               onPress={() => {
                 setBookingSlot((prev) => ({ ...prev, timeIn: time }));
                 setShowTimePicker(false);
               }}
-              style={styles.timeButton}
-            />
+            >
+              <Text style={styles.timeButtonText}>{format(time, "kk:mm")}</Text>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       )}
@@ -215,17 +208,24 @@ const BookingScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#7DA7F2",
+    backgroundColor: "#f9f9f9", // Light background
     padding: 20,
   },
   backArrow: {
-    fontSize: 20,
-    color: "black",
+    fontSize: 24,
+    color: "#DAA520", // Gold-brown
     marginBottom: 10,
   },
   title: {
-    fontSize: 22,
-    color: "red",
+    fontSize: 24,
+    color: "#DAA520", // Gold-brown
+    textAlign: "center",
+    marginBottom: 20,
+    fontWeight: "bold",
+  },
+  restaurantName: {
+    fontSize: 20,
+    color: "#333", // Dark text
     textAlign: "center",
     marginBottom: 20,
   },
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   field: {
-    borderColor: "gray",
+    borderColor: "#DAA520", // Gold-brown
     borderWidth: 1,
   },
   buttonContainer: {
@@ -243,54 +243,78 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#fff", // White background
     padding: 10,
     borderRadius: 10,
     width: "30%",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
   buttonText: {
     fontSize: 16,
+    color: "#333", // Dark text
   },
-  paxContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    width: "30%",
-    borderWidth: 1, // Adds a border to the Pax container
-    borderRadius: 10,
-    backgroundColor: "#f0f0f0", // Background color for the Pax box
-    padding: 10,
-  },
-  specialRequest: {
-    fontSize: 16,
+  label: {
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
+    color: "#DAA520", // Gold-brown
   },
-  textInput: {
+  input: {
     height: 100,
     borderWidth: 1,
-    borderColor: "#ccc",
-    backgroundColor: "#d3d3d3",
+    borderColor: "#DAA520", // Gold-brown
+    backgroundColor: "#fff", // White background
     borderRadius: 10,
     marginBottom: 20,
     textAlignVertical: "top",
     padding: 10,
+    fontSize: 16,
   },
   confirmButton: {
-    backgroundColor: "#b08968",
+    backgroundColor: "#DAA520", // Gold-brown
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    marginBottom: 10,
   },
   confirmButtonText: {
-    color: "white",
-    fontSize: 16,
+    color: "#fff", // White text
+    fontSize: 18,
     fontWeight: "bold",
   },
   cancelText: {
-    color: "red",
+    color: "#DAA520", // Gold-brown
     textAlign: "center",
     marginTop: 10,
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  calendar: {
+    borderWidth: 1,
+    borderColor: "#DAA520", // Gold-brown
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  timeContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  timeButton: {
+    backgroundColor: "#DAA520", // Gold-brown
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    width: "48%",
+    alignItems: "center",
+  },
+  timeButtonText: {
+    color: "#fff", // White text
     fontSize: 16,
   },
 });
@@ -303,7 +327,7 @@ const pickerSelectStyles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: "#DAA520", // Gold-brown
   },
   inputAndroid: {
     height: 40,
@@ -312,7 +336,7 @@ const pickerSelectStyles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "gray",
+    borderColor: "#DAA520", // Gold-brown
   },
 });
 

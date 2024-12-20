@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   bookButton: {
-    backgroundColor: "#007BFF",
+    backgroundColor: "#FF6347",
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,

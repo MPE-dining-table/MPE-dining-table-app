@@ -12,6 +12,7 @@ import { format } from "date-fns";
 import { Paystack } from "react-native-paystack-webview";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+
 export default function ConfirmationScreen({ route }) {
   const [makingPayment, setMakingPayment] = useState(false);
   const { restaurant = {}, bookingSlot = {} } = route.params;
@@ -44,13 +45,11 @@ export default function ConfirmationScreen({ route }) {
         }
       );
 
-      // const result = await response.json();
-
-      if (response.ok) {
+      if (response.status === 200) {
         console.log("Booking saved successfully:");
         navigation.navigate("ProfileScreen");
       } else {
-        console.error("Error saving booking:", result.message);
+        console.error("Error saving booking:", response.data.message);
       }
     } catch (error) {
       console.error("Error sending booking data:", error);
@@ -126,45 +125,48 @@ export default function ConfirmationScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#f9f9f9",
+    backgroundColor: "#f9f9f9", // Light background
     padding: 16,
   },
   header: {
-    // backgroundColor: "#002244",
+    backgroundColor: "#DAA520", // Gold-brown header
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
   },
   headerText: {
-    color: "#fff",
-    fontSize: 18,
+    color: "#fff", // White text
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
   },
   section: {
     marginBottom: 16,
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#fff", // White background for sections
     borderRadius: 8,
     shadowColor: "#000",
     shadowOpacity: 0.1,
     shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     marginBottom: 8,
+    color: "#DAA520", // Gold-brown title
   },
   text: {
-    fontSize: 14,
+    fontSize: 16,
     marginBottom: 4,
-    color: "#333",
+    color: "#333", // Dark text
   },
   total: {
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 8,
+    color: "#DAA520", // Gold-brown total
   },
   row: {
     flexDirection: "row",
@@ -174,23 +176,16 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 8,
   },
-  radioButton: {
-    height: 16,
-    width: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#333",
-    marginRight: 8,
-  },
   button: {
-    backgroundColor: "#e63946",
+    backgroundColor: "#DAA520", // Gold-brown button
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
+    marginTop: 16,
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 16,
+    color: "#fff", // White text
+    fontSize: 18,
     fontWeight: "bold",
   },
 });
