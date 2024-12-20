@@ -13,6 +13,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import axios from "axios";
+import * as Location from "expo-location"; // Import expo-location
 
 const SearchScreen = () => {
   const navigation = useNavigation();
@@ -21,6 +22,7 @@ const SearchScreen = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [locationPermission, setLocationPermission] = useState(false); // Add state for permission
 
   const cuisinesList = [
     "African",
@@ -46,19 +48,16 @@ const SearchScreen = () => {
       console.log("Raw restaurant data:", response.data.restuarents[0]);
       const sanitizedRestaurants = response.data.restuarents.map(
         (restaurant) => {
-          // Ensure cuisine is always an array
           let cuisineArray = [];
 
           if (typeof restaurant.cuisine === "string") {
-            // If it's a string, split it in case it's comma-separated
             cuisineArray = restaurant.cuisine
               .split(",")
               .map((c) => c.trim().toLowerCase());
           } else if (Array.isArray(restaurant.cuisine)) {
-            // If it's already an array, just normalize it
             cuisineArray = restaurant.cuisine
               .map((c) => (typeof c === "string" ? c.trim().toLowerCase() : ""))
-              .filter((c) => c); // Remove any empty strings
+              .filter((c) => c);
           }
 
           const sanitized = {
@@ -83,13 +82,30 @@ const SearchScreen = () => {
     fetchRes();
   }, []);
 
+  // Request location permission on component mount
+  useEffect(() => {
+    const requestLocationPermission = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Location Permission Denied",
+          "This app requires location access to find nearby restaurants."
+        );
+        setLocationPermission(false);
+      } else {
+        setLocationPermission(true);
+        console.log("Location permission granted!");
+      }
+    };
+    requestLocationPermission();
+  }, []);
+
   useEffect(() => {
     const filtered = restaurants.filter((restaurant) => {
       const matchesSearch = restaurant.restaurantName
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
-      // More forgiving cuisine matching
       const cuisineToMatch = selectedCuisine.toLowerCase();
       const matchesCuisine =
         !selectedCuisine ||
@@ -213,7 +229,7 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5", // Light gray background
+    backgroundColor: "#F5F5F5",
     padding: 16,
   },
   loadingContainer: {
@@ -229,8 +245,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingHorizontal: 16,
     marginBottom: 20,
-    elevation: 5, // Shadow for Android
-    shadowColor: "#000", // Shadow for iOS
+    elevation: 5,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -283,7 +299,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   locationText: {
-    color: "#333", // Dark gray color for the location name
+    color: "#333",
     fontSize: 16,
     marginLeft: 5,
   },
@@ -300,7 +316,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0,
     shadowRadius: 4,
   },
   cuisinesContainer: {

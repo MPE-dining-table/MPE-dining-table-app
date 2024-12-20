@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Platform,
   ScrollView,
-  Button,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import RNPickerSelect from "react-native-picker-select";
@@ -29,13 +28,10 @@ const BookingScreen = ({ route }) => {
   const navigation = useNavigation();
 
   const { restaurant = {} } = route.params;
-
   const { booking, isEditing } = route.params || {};
-
   const token = useSelector((state) => state.user.token);
 
   const handleConfirmBooking = async () => {
-    // Validation: Ensure required fields are not empty
     if (!bookingSlot.dateIn || !bookingSlot.timeIn || !bookingSlot.pax) {
       alert("Please complete all required fields: Date, Time, and Pax.");
       return;
@@ -43,7 +39,6 @@ const BookingScreen = ({ route }) => {
 
     try {
       if (isEditing && booking) {
-        // Call update API
         await axios.put(
           `https://mpe-backend-server.onrender.com/api/actions/booking/${booking._id}`,
           { bookingSlot },
@@ -55,7 +50,6 @@ const BookingScreen = ({ route }) => {
         );
         alert("Booking updated successfully!");
       } else {
-        // Normal booking logic
         navigation.navigate("ConfirmationScreen", { bookingSlot, restaurant });
       }
     } catch (error) {
@@ -74,7 +68,6 @@ const BookingScreen = ({ route }) => {
     if (!bookingSlot.dateIn) return [];
 
     const selectedDate = parseISO(bookingSlot.dateIn.dateString);
-
     const beginning = add(selectedDate, { hours: restaurant.openingTime });
     const end = add(selectedDate, { hours: restaurant.closingTime });
     const interval = 30;
@@ -97,17 +90,12 @@ const BookingScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-     
-
-      {/* Title */}
       <Text style={styles.title}>
         {isEditing ? "Edit Booking" : "New Booking"}
       </Text>
       <Text style={styles.restaurantName}>{restaurant.restaurantName}</Text>
 
-      {/* Buttons */}
       <View style={styles.buttonContainer}>
-        {/* Date */}
         <TouchableOpacity
           style={[styles.button, dateStyle]}
           onPress={() => setShowDatePicker(true)}
@@ -116,7 +104,6 @@ const BookingScreen = ({ route }) => {
           <Text style={styles.buttonText}>{formattedDate}</Text>
         </TouchableOpacity>
 
-        {/* Pax - Dropdown with Icon */}
         <View style={[styles.button, paxStyle]}>
           <Text style={styles.buttonText}>👥 Pax</Text>
           <RNPickerSelect
@@ -130,13 +117,12 @@ const BookingScreen = ({ route }) => {
               { label: "4 People", value: "4" },
               { label: "5+ People", value: "5+" },
             ]}
-            placeholder={{ label: "Choose Pax", value: bookingSlot.pax }} // Placeholder for Pax
+            placeholder={{ label: "Choose Pax", value: bookingSlot.pax }}
             style={pickerSelectStyles}
             value={bookingSlot.pax}
           />
         </View>
 
-        {/* Time */}
         <TouchableOpacity
           style={[styles.button, timeStyle]}
           onPress={() => setShowTimePicker(true)}
@@ -146,7 +132,6 @@ const BookingScreen = ({ route }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Special Request */}
       <Text style={styles.label}>Special Request</Text>
       <TextInput
         style={styles.input}
@@ -158,7 +143,6 @@ const BookingScreen = ({ route }) => {
         numberOfLines={4}
       />
 
-      {/* Confirm Button */}
       <TouchableOpacity
         style={styles.confirmButton}
         onPress={handleConfirmBooking}
@@ -166,12 +150,10 @@ const BookingScreen = ({ route }) => {
         <Text style={styles.confirmButtonText}>Confirm Booking</Text>
       </TouchableOpacity>
 
-      {/* Cancel Button */}
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Text style={styles.cancelText}>Cancel</Text>
       </TouchableOpacity>
 
-      {/* Date Picker */}
       {showDatePicker && (
         <Calendar
           style={styles.calendar}
@@ -184,7 +166,6 @@ const BookingScreen = ({ route }) => {
         />
       )}
 
-      {/* Time Picker */}
       {showTimePicker && (
         <ScrollView contentContainerStyle={styles.timeContainer}>
           {times.map((time, i) => (
@@ -208,43 +189,38 @@ const BookingScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9", // Light background
+    backgroundColor: "#f9f9f9",
     padding: 20,
   },
-  backArrow: {
-    fontSize: 24,
-    color: "#DAA520", // Gold-brown
-    marginBottom: 10,
-  },
   title: {
-    fontSize: 24,
-    color: "#DAA520", // Gold-brown
+    fontSize: 28,
+    color: "#DAA520",
     textAlign: "center",
     marginBottom: 20,
     fontWeight: "bold",
   },
   restaurantName: {
-    fontSize: 20,
-    color: "#333", // Dark text
+    fontSize: 22,
+    color: "#333",
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 30,
   },
   missingField: {
     borderColor: "red",
     borderWidth: 2,
   },
   field: {
-    borderColor: "#DAA520", // Gold-brown
+    borderColor: "#DAA520",
     borderWidth: 1,
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 20,
+    justifyContent: "space-between",
+    marginBottom: 30,
   },
   button: {
-    backgroundColor: "#fff", // White background
-    padding: 10,
+    backgroundColor: "#fff",
+    padding: 15,
     borderRadius: 10,
     width: "30%",
     alignItems: "center",
@@ -256,39 +232,39 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: "#333", // Dark text
+    color: "#333",
   },
   label: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#DAA520", // Gold-brown
+    color: "#DAA520",
   },
   input: {
     height: 100,
     borderWidth: 1,
-    borderColor: "#DAA520", // Gold-brown
-    backgroundColor: "#fff", // White background
+    borderColor: "#DAA520",
+    backgroundColor: "#fff",
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 30,
     textAlignVertical: "top",
     padding: 10,
     fontSize: 16,
   },
   confirmButton: {
-    backgroundColor: "#DAA520", // Gold-brown
+    backgroundColor: "#DAA520",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 20,
   },
   confirmButtonText: {
-    color: "#fff", // White text
+    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
   cancelText: {
-    color: "#DAA520", // Gold-brown
+    color: "#DAA520",
     textAlign: "center",
     marginTop: 10,
     fontSize: 16,
@@ -296,7 +272,7 @@ const styles = StyleSheet.create({
   },
   calendar: {
     borderWidth: 1,
-    borderColor: "#DAA520", // Gold-brown
+    borderColor: "#DAA520",
     borderRadius: 10,
     marginBottom: 20,
   },
@@ -306,15 +282,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   timeButton: {
-    backgroundColor: "#DAA520", // Gold-brown
-    padding: 10,
+    backgroundColor: "#DAA520",
+    padding: 15,
     borderRadius: 10,
     marginBottom: 10,
     width: "48%",
     alignItems: "center",
   },
   timeButtonText: {
-    color: "#fff", // White text
+    color: "#fff",
     fontSize: 16,
   },
 });
@@ -327,7 +303,7 @@ const pickerSelectStyles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "#DAA520", // Gold-brown
+    borderColor: "#DAA520",
   },
   inputAndroid: {
     height: 40,
@@ -336,7 +312,7 @@ const pickerSelectStyles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: "#DAA520", // Gold-brown
+    borderColor: "#DAA520",
   },
 });
 
