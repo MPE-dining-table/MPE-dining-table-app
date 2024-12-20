@@ -31,6 +31,11 @@ const ProfileScreen = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showBookingsModal, setShowBookingsModal] = useState(false);
 
+  // State to control visibility of sections
+  const [showProfile, setShowProfile] = useState(false);
+  const [showBookings, setShowBookings] = useState(false);
+  const [showLogout, setShowLogout] = useState(false);
+
   const dispatch = useDispatch();
   const navigation = useNavigation();
 
@@ -39,7 +44,6 @@ const ProfileScreen = () => {
       navigation.navigate("Login");
     } else {
       fetchBookings();
-      // console.log(token);
     }
   }, [user, navigation]);
 
@@ -89,8 +93,6 @@ const ProfileScreen = () => {
   };
 
   const handleDeleteBooking = async (id) => {
-    // console.log("Booking ID:",id);
-
     try {
       await axios.delete(
         `https://mpe-backend-server.onrender.com/api/actions/booking/${id}`,
@@ -106,25 +108,6 @@ const ProfileScreen = () => {
       console.error("Error deleting booking:", error);
     }
   };
-
-  // Handle update booking
-  // const handleUpdateBooking = async (id, updatedData) => {
-  //   try {
-  //     await axios.put(
-  //       `https://mpe-backend-server.onrender.com/api/actions/booking/${id}`,
-  //       updatedData,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
-  //     Alert.alert("Success", "Booking updated successfully");
-  //     fetchBookings(); // Refresh bookings
-  //   } catch (error) {
-  //     console.error("Error updating booking:", error);
-  //   }
-  // };
 
   const renderBookingItem = ({ item }) => {
     const formattedDate = item.bookingSlot.dateIn
@@ -169,58 +152,52 @@ const ProfileScreen = () => {
         <Text style={styles.headerText}>My Profile</Text>
       </View>
 
-      {/* Bookings Link */}
+      {/* Profile Details */}
       <TouchableOpacity
-        onPress={() => setShowBookingsModal(true)}
-        style={styles.bookingsLink}
+        style={styles.sectionTitle}
+        onPress={() => setShowProfile(!showProfile)}
       >
-        <Text style={styles.bookingsLinkText}>Bookings</Text>
+        <Text style={styles.sectionTitleText}>Profile Details</Text>
       </TouchableOpacity>
+      {showProfile && (
+        <View style={styles.form}>
+          <Text style={styles.label}>First Name</Text>
+          <TextInput
+            style={styles.input}
+            value={firstName}
+            onChangeText={setFirstName}
+            placeholder="Enter your first name"
+            placeholderTextColor="#888"
+          />
 
-      {/* Content */}
-      <View style={styles.content}>
-        {/* Profile Section */}
-        <View style={styles.content}>
-          {/* Profile Section */}
-          <View style={styles.form}>
-            <Text style={styles.label}>First Name</Text>
-            <TextInput
-              style={styles.input}
-              value={firstName}
-              onChangeText={setFirstName}
-              placeholder="Enter your first name"
-              placeholderTextColor="#888"
-            />
+          <Text style={styles.label}>Last Name</Text>
+          <TextInput
+            style={styles.input}
+            value={lastName}
+            onChangeText={setLastName}
+            placeholder="Enter your last name"
+            placeholderTextColor="#888"
+          />
 
-            <Text style={styles.label}>Last Name</Text>
-            <TextInput
-              style={styles.input}
-              value={lastName}
-              onChangeText={setLastName}
-              placeholder="Enter your last name"
-              placeholderTextColor="#888"
-            />
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Enter your email"
+            placeholderTextColor="#888"
+            keyboardType="email-address"
+          />
 
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Enter your email"
-              placeholderTextColor="#888"
-              keyboardType="email-address"
-            />
-
-            <Text style={styles.label}>Mobile Number</Text>
-            <TextInput
-              style={styles.input}
-              value={cellphone}
-              onChangeText={setCellphone}
-              placeholder="Enter your mobile number"
-              placeholderTextColor="#888"
-              keyboardType="phone-pad"
-            />
-          </View>
+          <Text style={styles.label}>Mobile Number</Text>
+          <TextInput
+            style={styles.input}
+            value={cellphone}
+            onChangeText={setCellphone}
+            placeholder="Enter your mobile number"
+            placeholderTextColor="#888"
+            keyboardType="phone-pad"
+          />
 
           {/* Save Changes Button */}
           <TouchableOpacity
@@ -233,44 +210,62 @@ const ProfileScreen = () => {
             </Text>
           </TouchableOpacity>
         </View>
+      )}
 
-        {/* Log Out Button */}
+      {/* Bookings Section */}
+      <TouchableOpacity
+        style={styles.sectionTitle}
+        onPress={() => setShowBookings(!showBookings)}
+      >
+        <Text style={styles.sectionTitleText}>Bookings</Text>
+      </TouchableOpacity>
+      {showBookings && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={showBookingsModal}
+          onRequestClose={() => setShowBookingsModal(false)}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Your Bookings</Text>
+              <FlatList
+                data={bookings}
+                renderItem={renderBookingItem}
+                keyExtractor={(item) => item._id}
+              />
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setShowBookingsModal(false)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+      )}
+
+      {/* Log Out Section */}
+      <TouchableOpacity
+        style={styles.sectionTitle}
+        onPress={() => setShowLogout(!showLogout)}
+      >
+        <Text style={styles.sectionTitleText}>Log Out</Text>
+      </TouchableOpacity>
+      {showLogout && (
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutButtonText}>Log Out</Text>
         </TouchableOpacity>
-      </View>
-
-      {/* Modal for Bookings */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={showBookingsModal}
-        onRequestClose={() => setShowBookingsModal(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Your Bookings</Text>
-            <FlatList
-              data={bookings}
-              renderItem={renderBookingItem}
-              keyExtractor={(item) => item._id}
-            />
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowBookingsModal(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      )}
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#F5F5F5",
+    padding: 15,
   },
   header: {
     backgroundColor: "#DEB887", // Light brown color
@@ -281,29 +276,39 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 5,
+    marginBottom: 15,
   },
   headerText: {
     color: "#FFF",
     fontSize: 24,
     fontWeight: "bold",
   },
-  bookingsLink: {
-    alignSelf: "flex-end",
+  sectionTitle: {
+    padding: 15,
+    backgroundColor: "#DEB887", // Light brown color
     marginTop: 10,
-    marginRight: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  bookingsLinkText: {
-    color: "#1E90FF", // Blue color for the link
-    fontSize: 14,
-    textDecorationLine: "underline",
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-    justifyContent: "center",
+  sectionTitleText: {
+    color: "#FFF",
+    fontSize: 18,
+    fontWeight: "bold",
   },
   form: {
     marginBottom: 20,
+    borderRadius: 10,
+    backgroundColor: "#FFF",
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 5,
   },
   label: {
     fontSize: 16,
@@ -317,6 +322,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
     color: "#333",
+    borderWidth: 1,
+    borderColor: "#DDD",
     elevation: 3,
   },
   updateButton: {
@@ -326,11 +333,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     alignSelf: "center",
     width: 150,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   updateButtonText: {
     color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  logoutButton: {
+    backgroundColor: "#f44336", // Red color for logout
+    padding: 15,
+    alignItems: "center",
+    borderRadius: 5,
+    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   modalContainer: {
     flex: 1,
@@ -343,24 +367,17 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: "80%",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#333",
     marginBottom: 20,
-  },
-  bookingItem: {
-    fontSize: 16,
-    color: "#333",
-    marginBottom: 5,
-  },
-  logoutButton: {
-    backgroundColor: "#f44336", // Red color for logout
-    padding: 15,
-    alignItems: "center",
-    borderRadius: 5,
-    marginTop: 20,
   },
   closeButton: {
     backgroundColor: "#333",
@@ -372,6 +389,43 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: "#FFF",
     fontSize: 16,
+    fontWeight: "bold",
+  },
+  bookingItem: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#f9f9f9",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  deleteButton: {
+    backgroundColor: "#FF6347", // Tomato red color
+    borderRadius: 5,
+    padding: 5,
+    marginTop: 5,
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+  },
+  editButton: {
+    backgroundColor: "#FFD700", // Golden color
+    borderRadius: 5,
+    padding: 5,
+    marginTop: 5,
+    alignItems: "center",
+  },
+  editButtonText: {
+    color: "#FFF",
     fontWeight: "bold",
   },
 });
