@@ -58,6 +58,10 @@ export default function SignupScreen({ navigation }) {
         Alert.alert("Success", "User registered successfully!");
         console.log("API Response:", response.data);
 
+        // After successful registration, navigate to the login screen
+        navigation.navigate('Login');
+
+        // Reset form and errors after redirect
         setUserInfo({
           firstName: "",
           lastName: "",
@@ -77,7 +81,7 @@ export default function SignupScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.formContainer}>
-         <Image source={logo} style={styles.logo} />
+        <Image source={logo} style={styles.logo} />
         <Text style={styles.title}>Signup</Text>
         
         <TextInput
