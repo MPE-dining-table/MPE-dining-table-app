@@ -24,6 +24,7 @@ const ProfileScreen = () => {
   const [lastName, setLastName] = useState(user?.lastName || "");
   const [email, setEmail] = useState(user?.email || "");
   const [cellphone, setCellphone] = useState(user?.cellphone || "");
+  const [isSaving, setIsSaving] = useState(false);
 
   // State for bookings
   const [bookings, setBookings] = useState([]);
@@ -38,9 +39,33 @@ const ProfileScreen = () => {
       navigation.navigate("Login");
     } else {
       fetchBookings();
-      console.log(token);
+      // console.log(token);
     }
   }, [user, navigation]);
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true);
+      const updatedUser = { firstName, lastName, email, cellphone };
+
+      await axios.put(
+        "https://mpe-backend-server.onrender.com/api/actions/profile",
+        updatedUser,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      alert("Profile updated successfully!");
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      alert("Error updating profile. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const fetchBookings = async () => {
     try {
@@ -105,15 +130,16 @@ const ProfileScreen = () => {
     const formattedDate = item.bookingSlot.dateIn
       ? format(new Date(item.bookingSlot.dateIn.timestamp), "yyyy-MM-dd")
       : "Date not set";
-  
+
     const formattedTime = item.bookingSlot.timeIn
       ? format(new Date(item.bookingSlot.timeIn), "hh:mm a")
       : "Time not set";
-  
+
     return (
       <View style={styles.bookingItem}>
         <Text style={styles.bookingText}>
-          {item.restaurant?.restaurantName || "Unknown Restaurant"} - {formattedDate} at {formattedTime}
+          {item.restaurant?.restaurantName || "Unknown Restaurant"} -{" "}
+          {formattedDate} at {formattedTime}
         </Text>
         <TouchableOpacity
           style={styles.deleteButton}
@@ -125,8 +151,8 @@ const ProfileScreen = () => {
           style={styles.editButton}
           onPress={() =>
             navigation.navigate("BookingScreen", {
-              booking: item, 
-              isEditing: true, 
+              booking: item,
+              isEditing: true,
             })
           }
         >
@@ -135,7 +161,6 @@ const ProfileScreen = () => {
       </View>
     );
   };
-  
 
   return (
     <View style={styles.container}>
@@ -155,15 +180,58 @@ const ProfileScreen = () => {
       {/* Content */}
       <View style={styles.content}>
         {/* Profile Section */}
-        <View style={styles.form}>
-          <Text style={styles.label}>First name</Text>
-          <TextInput style={styles.input} value={firstName} editable={false} />
-          <Text style={styles.label}>Last name</Text>
-          <TextInput style={styles.input} value={lastName} editable={false} />
-          <Text style={styles.label}>Email</Text>
-          <TextInput style={styles.input} value={email} editable={false} />
-          <Text style={styles.label}>Mobile number</Text>
-          <TextInput style={styles.input} value={cellphone} editable={false} />
+        <View style={styles.content}>
+          {/* Profile Section */}
+          <View style={styles.form}>
+            <Text style={styles.label}>First Name</Text>
+            <TextInput
+              style={styles.input}
+              value={firstName}
+              onChangeText={setFirstName}
+              placeholder="Enter your first name"
+              placeholderTextColor="#888"
+            />
+
+            <Text style={styles.label}>Last Name</Text>
+            <TextInput
+              style={styles.input}
+              value={lastName}
+              onChangeText={setLastName}
+              placeholder="Enter your last name"
+              placeholderTextColor="#888"
+            />
+
+            <Text style={styles.label}>Email</Text>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Enter your email"
+              placeholderTextColor="#888"
+              keyboardType="email-address"
+            />
+
+            <Text style={styles.label}>Mobile Number</Text>
+            <TextInput
+              style={styles.input}
+              value={cellphone}
+              onChangeText={setCellphone}
+              placeholder="Enter your mobile number"
+              placeholderTextColor="#888"
+              keyboardType="phone-pad"
+            />
+          </View>
+
+          {/* Save Changes Button */}
+          <TouchableOpacity
+            style={styles.updateButton}
+            onPress={handleSave}
+            disabled={isSaving}
+          >
+            <Text style={styles.updateButtonText}>
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Log Out Button */}
