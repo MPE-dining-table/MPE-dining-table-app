@@ -53,7 +53,7 @@ Follow these steps to set up the project locally:
 Set up environment variables:
 Create a .env file in the root directory and add the following:
 
-Copy
+
 PAYSTACK_PUBLIC_KEY=your_paystack_public_key
 API_BASE_URL=https://mpe-backend-server.onrender.com
 Run the app:
@@ -107,7 +107,7 @@ GitHub Repository: MPE Dining Table App
 
 Backend API: MPE Backend Server
 
-Figma Design: Figma Link
+Figma Design: Figma Link: https://www.figma.com/design/xUutUFCCUNBT51Vapqouur/Untitled?node-id=0-1&t=G3BqT32EvOuVaIuN-1
 
 Documentation: https://docs.google.com/document/d/1g-jU-qC4EQvl4Z7UGiayujZsWsVuFa0D1QNtMVciFGI/edit?usp=sharing
 
