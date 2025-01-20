@@ -1,4 +1,4 @@
-import 'react-native-gesture-handler'; // Import this at the top of the file
+import "react-native-gesture-handler"; // Import this at the top of the file
 
 import React, { useEffect, useState } from "react";
 import {
@@ -77,11 +77,7 @@ const Footer = ({ activeScreen }) => {
         onPress={() => navigation.navigate("Home")}
         style={styles.footerButton}
       >
-        <FontAwesomeIcon
-          icon={faHome}
-          size={24}
-          color={getIconColor("Home")}
-        />
+        <FontAwesomeIcon icon={faHome} size={24} color={getIconColor("Home")} />
       </TouchableOpacity>
 
       {/* Search Button */}
@@ -126,7 +122,8 @@ const Footer = ({ activeScreen }) => {
 // Layout component to wrap all screens with the Footer
 const ScreenLayout = ({ children }) => {
   const navigation = useNavigation();
-  const activeScreen = navigation.getState().routes[navigation.getState().index].name;
+  const activeScreen =
+    navigation.getState().routes[navigation.getState().index].name;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -271,15 +268,15 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#DEB887',
+    backgroundColor: "#EBEBEB",
   },
   container: {
     flex: 1,
   },
   footerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#DEB887',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#EBEBEB",
     paddingBottom: 20,
   },
   footerButton: {
