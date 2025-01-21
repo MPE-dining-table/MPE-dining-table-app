@@ -156,12 +156,12 @@ const SearchScreen = () => {
         </TouchableOpacity>
         <Text style={styles.locationText}>{item.address}</Text>
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.addIcon}
         onPress={() => handleAddPress(item)}
       >
         <Ionicons name="add-circle-outline" size={24} color="#4CAF50" />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 
@@ -229,8 +229,16 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#EBEBEB",
+
     padding: 16,
+    marginTop: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5F5F5",
   },
   loadingContainer: {
     flex: 1,

@@ -213,6 +213,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#f9f9f9", // Light background
     padding: 20,
+    marginTop: 20,
+    backgroundColor: "#EBEBEB",  
   },
   backArrow: {
     fontSize: 24,
@@ -221,14 +223,15 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    color: "#DAA520", // Gold-brown
+    color: "#333", // Gold-brown
+
     textAlign: "center",
     marginBottom: 20,
     fontWeight: "bold",
   },
   restaurantName: {
     fontSize: 20,
-    color: "#333", // Dark text
+    color: "#3A6EA5", // Dark text
     textAlign: "center",
     marginBottom: 20,
   },
@@ -237,7 +240,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   field: {
-    borderColor: "#DAA520", // Gold-brown
+    borderColor: "#FF6700", // Gold-brown
+
     borderWidth: 1,
   },
   buttonContainer: {
@@ -265,12 +269,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#DAA520", // Gold-brown
+    color: "#333", // Gold-brown
+
   },
   input: {
     height: 100,
     borderWidth: 1,
-    borderColor: "#DAA520", // Gold-brown
+    borderColor: "#FF6700", // Gold-brown
+
     backgroundColor: "#fff", // White background
     borderRadius: 10,
     marginBottom: 20,
@@ -279,7 +285,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   confirmButton: {
-    backgroundColor: "#DAA520", // Gold-brown
+    backgroundColor: "#FF6700", // Gold-brown
+
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -291,7 +298,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   cancelText: {
-    color: "#DAA520", // Gold-brown
+    color: "red", // Gold-brown
+
     textAlign: "center",
     marginTop: 10,
     fontSize: 16,

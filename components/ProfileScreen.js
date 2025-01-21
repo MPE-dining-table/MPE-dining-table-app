@@ -32,7 +32,8 @@ const ProfileScreen = () => {
   const [showBookingsModal, setShowBookingsModal] = useState(false);
 
   // State to control visibility of sections
-  const [showProfile, setShowProfile] = useState(false);
+  const [showProfile, setShowProfile] = useState(true);
+
   const [showBookings, setShowBookings] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
 
@@ -264,11 +265,13 @@ const ProfileScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#EBEBEB",
     padding: 15,
+    marginTop: 20,
   },
   header: {
-    backgroundColor: "#FF6347", // Light brown color
+    backgroundColor: "#C0C0C0",
+
     paddingVertical: 20,
     alignItems: "center",
     shadowColor: "#000",
@@ -280,13 +283,14 @@ const styles = StyleSheet.create({
     borderRadius:25
   },
   headerText: {
-    color: "#FFF",
+    color: "#EBEBEB",
     fontSize: 24,
     fontWeight: "bold",
   },
   sectionTitle: {
     padding: 15,
-    backgroundColor: "#DEB887", // Light brown color
+    backgroundColor: "#FF6700", // Light brown color
+
     marginTop: 10,
     borderRadius: 10,
     shadowColor: "#000",
@@ -328,7 +332,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   updateButton: {
-    backgroundColor: "#DEB887", // Light brown color
+    backgroundColor: "#FF6700", // Light brown color
     borderRadius: 10,
     padding: 12,
     alignItems: "center",

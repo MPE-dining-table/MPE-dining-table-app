@@ -125,17 +125,21 @@ export default function ConfirmationScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9", // Light background
+    backgroundColor: "#EBEBEB", // Light background
+
     padding: 16,
+    marginTop: 20,    
   },
   header: {
-    backgroundColor: "#DAA520", // Gold-brown header
+    backgroundColor: "#EBEBEB", // Gold-brown header
+
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
   },
   headerText: {
-    color: "#fff", // White text
+    color: "#3A6EA5", // White text
+
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
@@ -177,7 +181,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   button: {
-    backgroundColor: "#DAA520", // Gold-brown button
+    backgroundColor: "#FF6700", // Gold-brown button
+
     padding: 16,
     borderRadius: 8,
     alignItems: "center",

@@ -125,7 +125,8 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   button: {
-    backgroundColor: '#FF6347',
+    backgroundColor: '#FF6700',
+
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 30,
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   buttonText: {
-    color: 'white',
+    color: '#EBEBEB',
     fontWeight: 'bold',
     fontSize: 18,
     fontFamily: 'Poppins_400Regular',
@@ -165,11 +166,12 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   leftButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#3A6EA5',
     marginRight: 10,
   },
   rightButton: {
-    backgroundColor: '#2196F3',
+    backgroundColor: '#3A6EA5',
+
   },
   splitButtonText: {
     color: 'white',

@@ -80,7 +80,8 @@ export default function SignupScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.formContainer}>
+      {/* <View style={styles.formContainer}> */}
+
         <Image source={logo} style={styles.logo} />
         <Text style={styles.title}>Signup</Text>
         
@@ -128,7 +129,8 @@ export default function SignupScreen({ navigation }) {
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <Text style={styles.buttonText}>Signup</Text>
         </TouchableOpacity>
-      </View>
+      {/* </View> */}
+
     </View>
   );
 }
@@ -181,7 +183,8 @@ const styles = StyleSheet.create({
   button: {
     width: "60%", // Ensures the button width is set to 60% of its container
     alignSelf: "center", // Centers the button horizontally within its container
-    backgroundColor: "#3366FF",
+    backgroundColor: '#3A6EA5',
+
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",

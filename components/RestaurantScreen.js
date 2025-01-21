@@ -309,11 +309,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#EBEBEB",
+    marginTop: 20,
   },
   image: {
     width: "100%",
-    height: 200,
+    height: 300,
+
     resizeMode: "cover",
     borderRadius: 12,
     marginBottom: 20,
@@ -329,15 +331,11 @@ const styles = StyleSheet.create({
   favoriteButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#EBEBEB",
     padding: 10,
     borderRadius: 8,
     marginVertical: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+
   },
   favoriteButtonText: {
     fontSize: 16,
@@ -357,10 +355,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginVertical: 16,
+    backgroundColor: "#EBEBEB",
   },
   linkText: {
     fontSize: 16,
-    color: "#007BFF",
+    color: "#3A6EA5",
+
     fontWeight: "bold",
   },
   horizontalLine: {
@@ -379,10 +379,11 @@ const styles = StyleSheet.create({
   contactText: {
     fontSize: 16,
     marginLeft: 8,
-    color: "#555",
+    color: "#FF6700",
   },
   contactLink: {
-    color: "#007BFF",
+    color: "#3A6EA5",
+
   },
   activityIndicator: {
     marginVertical: 16,
@@ -393,7 +394,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   bookButton: {
-    backgroundColor: "#FF6347",
+    backgroundColor: "#FF6700",
+
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,
