@@ -95,6 +95,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {/* <View style={styles.formContainer}> */}
+
         <Image source={logo} style={styles.logo} />
         <TextInput
           style={styles.input}
@@ -138,6 +139,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       {/* </View> */}
+
 
       {/* Modal for Terms & Conditions */}
       <Modal
@@ -248,6 +250,7 @@ const styles = StyleSheet.create({
   },
   forgotPassword: {
     color: '#3A6EA5',
+
     fontSize: 14,
     fontWeight: "500",
     marginBottom: 20,
@@ -266,11 +269,13 @@ const styles = StyleSheet.create({
     color: '#3A6EA5',
     textDecorationLine: "underline",
     
+
   },
   button: {
     width: "60%",
     alignSelf: "center",
     backgroundColor: '#3A6EA5',
+
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",

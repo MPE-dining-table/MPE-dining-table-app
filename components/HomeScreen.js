@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: '#FF6700',
+
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 30,
@@ -170,6 +171,7 @@ const styles = StyleSheet.create({
   },
   rightButton: {
     backgroundColor: '#3A6EA5',
+
   },
   splitButtonText: {
     color: 'white',

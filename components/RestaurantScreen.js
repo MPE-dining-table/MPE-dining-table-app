@@ -315,6 +315,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 300,
+
     resizeMode: "cover",
     borderRadius: 12,
     marginBottom: 20,
@@ -334,6 +335,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginVertical: 10,
+
   },
   favoriteButtonText: {
     fontSize: 16,
@@ -358,6 +360,7 @@ const styles = StyleSheet.create({
   linkText: {
     fontSize: 16,
     color: "#3A6EA5",
+
     fontWeight: "bold",
   },
   horizontalLine: {
@@ -380,6 +383,7 @@ const styles = StyleSheet.create({
   },
   contactLink: {
     color: "#3A6EA5",
+
   },
   activityIndicator: {
     marginVertical: 16,
@@ -391,6 +395,7 @@ const styles = StyleSheet.create({
   },
   bookButton: {
     backgroundColor: "#FF6700",
+
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 8,

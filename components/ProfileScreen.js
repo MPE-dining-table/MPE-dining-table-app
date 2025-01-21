@@ -33,6 +33,7 @@ const ProfileScreen = () => {
 
   // State to control visibility of sections
   const [showProfile, setShowProfile] = useState(true);
+
   const [showBookings, setShowBookings] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
 
@@ -270,6 +271,7 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: "#C0C0C0",
+
     paddingVertical: 20,
     alignItems: "center",
     shadowColor: "#000",
@@ -288,6 +290,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     padding: 15,
     backgroundColor: "#FF6700", // Light brown color
+
     marginTop: 10,
     borderRadius: 10,
     shadowColor: "#000",

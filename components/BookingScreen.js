@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     color: "#333", // Gold-brown
+
     textAlign: "center",
     marginBottom: 20,
     fontWeight: "bold",
@@ -240,6 +241,7 @@ const styles = StyleSheet.create({
   },
   field: {
     borderColor: "#FF6700", // Gold-brown
+
     borderWidth: 1,
   },
   buttonContainer: {
@@ -268,11 +270,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
     color: "#333", // Gold-brown
+
   },
   input: {
     height: 100,
     borderWidth: 1,
     borderColor: "#FF6700", // Gold-brown
+
     backgroundColor: "#fff", // White background
     borderRadius: 10,
     marginBottom: 20,
@@ -282,6 +286,7 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     backgroundColor: "#FF6700", // Gold-brown
+
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -294,6 +299,7 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     color: "red", // Gold-brown
+
     textAlign: "center",
     marginTop: 10,
     fontSize: 16,

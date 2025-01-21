@@ -126,17 +126,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#EBEBEB", // Light background
+
     padding: 16,
     marginTop: 20,    
   },
   header: {
     backgroundColor: "#EBEBEB", // Gold-brown header
+
     padding: 16,
     borderRadius: 8,
     marginBottom: 16,
   },
   headerText: {
     color: "#3A6EA5", // White text
+
     fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
@@ -179,6 +182,7 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: "#FF6700", // Gold-brown button
+
     padding: 16,
     borderRadius: 8,
     alignItems: "center",
