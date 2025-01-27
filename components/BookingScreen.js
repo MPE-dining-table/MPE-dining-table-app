@@ -87,58 +87,76 @@ const BookingScreen = ({ route }) => {
       {/* Date, Pax, and Time Selection */}
       <View style={styles.selectionContainer}>
         <TouchableOpacity
-          style={[styles.selectionButton, !bookingSlot.dateIn && styles.missingField]}
+          style={[
+            styles.selectionButton,
+            !bookingSlot.dateIn && styles.missingField,
+          ]}
           onPress={() => setShowDatePicker(true)}
         >
           <Text style={styles.selectionButtonText}>📅 {formattedDate}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-  style={[styles.selectionButton, !bookingSlot.pax && styles.missingField]}
-  onPress={() => setShowPaxModal(true)}
->
-  <Text style={styles.selectionButtonText}>👥 {bookingSlot.pax ? `${bookingSlot.pax} Person${bookingSlot.pax > 1 ? 's' : ''}` : "Select Pax"}</Text>
-</TouchableOpacity>
-
-
-<Modal visible={showPaxModal} transparent={true} animationType="slide">
-  <View style={styles.modalOverlay}>
-    <View style={styles.modalContent}>
-      <ScrollView contentContainerStyle={styles.timeContainer}>
-        {[1, 2, 3, 4, 5].map((pax) => (
-          <TouchableOpacity
-            key={`pax-${pax}`}
-            style={styles.timeButton}
-            onPress={() => {
-              setBookingSlot((prev) => ({ ...prev, pax: pax.toString() }));
-              setShowPaxModal(false);
-            }}
-          >
-            <Text style={styles.timeButtonText}>{pax} Person{pax > 1 ? 's' : ''}</Text>
-          </TouchableOpacity>
-        ))}
-        <TouchableOpacity
-          style={styles.timeButton}
-          onPress={() => {
-            setBookingSlot((prev) => ({ ...prev, pax: "5+" }));
-            setShowPaxModal(false);
-          }}
+          style={[
+            styles.selectionButton,
+            !bookingSlot.pax && styles.missingField,
+          ]}
+          onPress={() => setShowPaxModal(true)}
         >
-          <Text style={styles.timeButtonText}>5+ People</Text>
+          <Text style={styles.selectionButtonText}>
+            👥{" "}
+            {bookingSlot.pax
+              ? `${bookingSlot.pax} Person${bookingSlot.pax > 1 ? "s" : ""}`
+              : "Select Pax"}
+          </Text>
         </TouchableOpacity>
-      </ScrollView>
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => setShowPaxModal(false)}
-      >
-        <Text style={styles.closeButtonText}>Close</Text>
-      </TouchableOpacity>
-    </View>
-  </View>
-</Modal>
+
+        <Modal visible={showPaxModal} transparent={true} animationType="slide">
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <ScrollView contentContainerStyle={styles.timeContainer}>
+                {[1, 2, 3, 4, 5].map((pax) => (
+                  <TouchableOpacity
+                    key={`pax-${pax}`}
+                    style={styles.timeButton}
+                    onPress={() => {
+                      setBookingSlot((prev) => ({
+                        ...prev,
+                        pax: pax.toString(),
+                      }));
+                      setShowPaxModal(false);
+                    }}
+                  >
+                    <Text style={styles.timeButtonText}>
+                      {pax} Person{pax > 1 ? "s" : ""}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+                <TouchableOpacity
+                  style={styles.timeButton}
+                  onPress={() => {
+                    setBookingSlot((prev) => ({ ...prev, pax: "5+" }));
+                    setShowPaxModal(false);
+                  }}
+                >
+                  <Text style={styles.timeButtonText}>5+ People</Text>
+                </TouchableOpacity>
+              </ScrollView>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setShowPaxModal(false)}
+              >
+                <Text style={styles.closeButtonText}>Close</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
 
         <TouchableOpacity
-          style={[styles.selectionButton, !bookingSlot.timeIn && styles.missingField]}
+          style={[
+            styles.selectionButton,
+            !bookingSlot.timeIn && styles.missingField,
+          ]}
           onPress={() => setShowTimePicker(true)}
         >
           <Text style={styles.selectionButtonText}>⏰ {formattedTime}</Text>
@@ -150,14 +168,19 @@ const BookingScreen = ({ route }) => {
       <TextInput
         style={styles.input}
         value={bookingSlot.request}
-        onChangeText={(text) => setBookingSlot((prev) => ({ ...prev, request: text }))}
+        onChangeText={(text) =>
+          setBookingSlot((prev) => ({ ...prev, request: text }))
+        }
         multiline
         numberOfLines={4}
         placeholder="Any special requests?"
       />
 
       {/* Confirm and Cancel Buttons */}
-      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirmBooking}>
+      <TouchableOpacity
+        style={styles.confirmButton}
+        onPress={handleConfirmBooking}
+      >
         <Text style={styles.confirmButtonText}>Confirm Booking</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -175,7 +198,10 @@ const BookingScreen = ({ route }) => {
                 setShowDatePicker(false);
               }}
               markedDates={{
-                [bookingSlot.dateIn?.dateString]: { selected: true, selectedColor: "#FF6700" },
+                [bookingSlot.dateIn?.dateString]: {
+                  selected: true,
+                  selectedColor: "#FF6700",
+                },
               }}
             />
             <TouchableOpacity
@@ -202,7 +228,9 @@ const BookingScreen = ({ route }) => {
                     setShowTimePicker(false);
                   }}
                 >
-                  <Text style={styles.timeButtonText}>{format(time, "hh:mm a")}</Text>
+                  <Text style={styles.timeButtonText}>
+                    {format(time, "hh:mm a")}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>

@@ -45,7 +45,7 @@ const SearchScreen = () => {
         "https://mpe-backend-server.onrender.com/api/actions/fetch-restuarents"
       );
 
-      console.log("Raw restaurant data:", response.data.restuarents[0]);
+      // console.log("Raw restaurant data:", response.data.restuarents[0]);
       const sanitizedRestaurants = response.data.restuarents.map(
         (restaurant) => {
           let cuisineArray = [];

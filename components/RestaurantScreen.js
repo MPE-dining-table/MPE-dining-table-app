@@ -98,10 +98,10 @@ const RestaurantScreen = ({ route }) => {
           },
         }
       );
-      Alert(`${restaurant.restaurantName} added to favorites!`);
+      Alert.alert(`${restaurant.restaurantName} added to favorites!`);
     } catch (error) {
       console.error("Error adding to favorites:", error);
-      alert("Failed to add to favorites. Please try again.");
+      Alert.alert("Error adding to favorites:", error);
     }
   };
 
@@ -195,11 +195,14 @@ const RestaurantScreen = ({ route }) => {
       <View style={styles.horizontalLine} />
 
       {loading ? (
-        <ActivityIndicator
-          size="large"
-          color="#0000ff"
-          style={styles.activityIndicator}
-        />
+        <View>
+          <ActivityIndicator
+            size="large"
+            color="#0000ff"
+            style={styles.activityIndicator}
+          />
+          <Text>Loading Restaurant Location...</Text>
+        </View>
       ) : (
         coordinates && (
           <MapView
@@ -335,7 +338,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 8,
     marginVertical: 10,
-
   },
   favoriteButtonText: {
     fontSize: 16,
@@ -383,7 +385,6 @@ const styles = StyleSheet.create({
   },
   contactLink: {
     color: "#3A6EA5",
-
   },
   activityIndicator: {
     marginVertical: 16,

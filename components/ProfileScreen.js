@@ -41,12 +41,12 @@ const ProfileScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (!user) {
-      navigation.navigate("Login");
-    } else {
+    if (user) {
       fetchBookings();
+    } else {
+      navigation.navigate("Login");
     }
-  }, [user, navigation]);
+  }, []);
 
   const handleSave = async () => {
     try {
@@ -82,15 +82,17 @@ const ProfileScreen = () => {
           },
         }
       );
+      // console.log("your bookings: ", response.data);
       setBookings(response.data);
     } catch (error) {
       console.error("Error fetching bookings:", error);
+      Alert.alert("Error fetching bookings", error.message);
     }
   };
 
-  // Handle logout
   const handleLogout = () => {
     dispatch(clearUser());
+    navigation.navigate("Home");
   };
 
   const handleDeleteBooking = async (id) => {
@@ -216,7 +218,10 @@ const ProfileScreen = () => {
       {/* Bookings Section */}
       <TouchableOpacity
         style={styles.sectionTitle}
-        onPress={() => setShowBookings(!showBookings)}
+        onPress={() => {
+          setShowBookings(!showBookings);
+          if (!showBookings) setShowBookingsModal(true); // Open bookings modal
+        }}
       >
         <Text style={styles.sectionTitleText}>Bookings</Text>
       </TouchableOpacity>
@@ -280,7 +285,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     marginBottom: 15,
-    borderRadius:25
+    borderRadius: 25,
   },
   headerText: {
     color: "#EBEBEB",

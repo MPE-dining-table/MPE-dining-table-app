@@ -6,6 +6,7 @@ import {
   Image,
   FlatList,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faHeart, faStar } from "@fortawesome/free-solid-svg-icons";
@@ -35,6 +36,7 @@ const FavoritesScreen = () => {
         setFavoriteRestaurants(response.data);
       } catch (error) {
         console.error("Error fetching favorites:", error);
+        Alert.alert("Error fetching favorites", error.message);
       } finally {
         setLoading(false);
       }
