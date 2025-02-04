@@ -139,12 +139,5 @@ For questions or feedback, contact:
   🐙 GitHub: [@eungobs](https://github.com/eungobs)  
 
 ---
-
-### 🔥 Key Updates:
-1. **How to Use the App**: Added a detailed section explaining how to use the app.
-2. **Google Docs Link**: Included the provided Google Docs link for documentation.
-3. **Clear Instructions**: Simplified the steps for using the app, making it user-friendly.
-4. **Added Expo APK Link**: Users can now download the app via Expo.
-
 🚀 **Happy Booking!** 🎉
 
