@@ -36,8 +36,8 @@ const StarRating = ({ rating, setRating }) => {
 
 const RestaurantScreen = ({ route }) => {
   const navigation = useNavigation();
-  const user = useSelector((state) => state.user.user);
-  const token = useSelector((state) => state.user.token);
+  const user = useSelector((state) => state.user.user) || null;
+  const token = useSelector((state) => state.user.token) || "";
 
   const { restaurant = {} } = route.params || {
     restaurant: {
@@ -63,16 +63,27 @@ const RestaurantScreen = ({ route }) => {
   const [staffRating, setStaffRating] = useState(0);
 
   const fetchCoordinates = async (address) => {
+    if (!address || address === "No location provided") {
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await axios.get(
-        `https://geocode.xyz/${address}?json=1&auth=114163668033352e15780839x4681`
+        `https://geocode.xyz/${encodeURIComponent(
+          address
+        )}?json=1&auth=114163668033352e15780839x4681`
       );
       const data = response.data;
 
       if (data.error) {
         console.error("Geocoding error:", data.error.description);
+        setCoordinates(null);
       } else {
         const { latt, longt } = data;
+        if (!latt || !longt) {
+          throw new Error("Invalid coordinates received");
+        }
         setCoordinates({
           latitude: parseFloat(latt),
           longitude: parseFloat(longt),
@@ -80,6 +91,7 @@ const RestaurantScreen = ({ route }) => {
       }
     } catch (error) {
       console.error("Fetch error:", error);
+      setCoordinates(null);
     } finally {
       setLoading(false);
     }
@@ -194,33 +206,27 @@ const RestaurantScreen = ({ route }) => {
 
       <View style={styles.horizontalLine} />
 
-      {loading ? (
-        <View>
-          <ActivityIndicator
-            size="large"
-            color="#0000ff"
-            style={styles.activityIndicator}
+      {!loading &&
+      coordinates &&
+      coordinates.latitude &&
+      coordinates.longitude ? (
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: coordinates.latitude,
+            longitude: coordinates.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        >
+          <Marker
+            coordinate={coordinates}
+            title={restaurant.name}
+            description={restaurant.address}
           />
-          <Text>Loading Restaurant Location...</Text>
-        </View>
+        </MapView>
       ) : (
-        coordinates && (
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: coordinates.latitude,
-              longitude: coordinates.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-          >
-            <Marker
-              coordinate={coordinates}
-              title={restaurant.name}
-              description={restaurant.address}
-            />
-          </MapView>
-        )
+        <Text>No valid location available.</Text>
       )}
 
       <TouchableOpacity
