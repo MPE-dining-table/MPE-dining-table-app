@@ -43,6 +43,10 @@
 ## ⚙️ Installation
 Follow these steps to set up the project locally:
 
+Or just click te following linkt to get the latest build:
+
+https://drive.google.com/file/d/1evDHqPWUCbNQkHVAnPwcHfy_IgKDrdbf/view?usp=drive_link
+
 1. **Clone the repository**:
 
    ```bash
