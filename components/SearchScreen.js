@@ -9,11 +9,15 @@ import {
   Text,
   Alert,
   ActivityIndicator,
+  StatusBar,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import axios from "axios";
-import * as Location from "expo-location"; // Import expo-location
+import * as Location from "expo-location";
+
+const { width } = Dimensions.get("window");
 
 const SearchScreen = () => {
   const navigation = useNavigation();
@@ -22,7 +26,7 @@ const SearchScreen = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [locationPermission, setLocationPermission] = useState(false); // Add state for permission
+  const [locationPermission, setLocationPermission] = useState(false);
 
   const cuisinesList = [
     "African",
@@ -45,7 +49,6 @@ const SearchScreen = () => {
         "https://mpe-backend-server.onrender.com/api/actions/fetch-restuarents"
       );
 
-      // console.log("Raw restaurant data:", response.data.restuarents[0]);
       const sanitizedRestaurants = response.data.restuarents.map(
         (restaurant) => {
           let cuisineArray = [];
@@ -82,7 +85,6 @@ const SearchScreen = () => {
     fetchRes();
   }, []);
 
-  // Request location permission on component mount
   useEffect(() => {
     const requestLocationPermission = async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -137,83 +139,124 @@ const SearchScreen = () => {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.imageContainer}>
-      <TouchableOpacity onPress={() => handleAddPress(item)}>
-        <Image
-          source={{ uri: item.image || "https://via.placeholder.com/150" }}
-          style={styles.image}
-        />
-      </TouchableOpacity>
-      <View style={styles.textContainer}>
-        <Text style={styles.restaurantName}>{item.restaurantName}</Text>
-      </View>
-      <View style={styles.locationContainer}>
-        <TouchableOpacity
-          style={styles.locationIcon}
-          onPress={() => handleLocationPress(item.address)}
+    <TouchableOpacity 
+      style={styles.restaurantCard}
+      onPress={() => handleAddPress(item)}
+      activeOpacity={0.9}
+    >
+      <Image
+        source={{ uri: item.image || "https://via.placeholder.com/150" }}
+        style={styles.restaurantImage}
+      />
+      <View style={styles.cardOverlay} />
+      
+      <View style={styles.restaurantInfo}>
+        <View style={styles.nameContainer}>
+          <Text style={styles.restaurantName}>{item.restaurantName}</Text>
+          {item.cuisine && item.cuisine.length > 0 && (
+            <View style={styles.cuisineTag}>
+              <Text style={styles.cuisineTagText}>
+                {item.cuisine[0].charAt(0).toUpperCase() + item.cuisine[0].slice(1)}
+              </Text>
+            </View>
+          )}
+        </View>
+        
+        <View style={styles.locationContainer}>
+          <FontAwesome5 name="map-marker-alt" size={16} color="#FF6B6B" />
+          <Text style={styles.locationText} numberOfLines={1}>
+            {item.address}
+          </Text>
+        </View>
+        
+        <TouchableOpacity 
+          style={styles.viewButton}
+          onPress={() => handleAddPress(item)}
         >
-          <Ionicons name="location-outline" size={24} color="#FF6347" />
+          <Text style={styles.viewButtonText}>View Details</Text>
+          <FontAwesome5 name="arrow-right" size={12} color="#FFFFFF" />
         </TouchableOpacity>
-        <Text style={styles.locationText}>{item.address}</Text>
       </View>
-      {/* <TouchableOpacity
-        style={styles.addIcon}
-        onPress={() => handleAddPress(item)}
-      >
-        <Ionicons name="add-circle-outline" size={24} color="#4CAF50" />
-      </TouchableOpacity> */}
+    </TouchableOpacity>
+  );
+
+  const renderEmptyList = () => (
+    <View style={styles.emptyContainer}>
+      <FontAwesome5 name="search" size={50} color="#ccc" />
+      <Text style={styles.emptyText}>No restaurants found</Text>
+      <Text style={styles.emptySubText}>
+        Try adjusting your search or cuisine filter
+      </Text>
     </View>
   );
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FF6347" />
+        <ActivityIndicator size="large" color="#FF6B6B" />
+        <Text style={styles.loadingText}>Finding restaurants...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+      
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Find Restaurants</Text>
+        <Text style={styles.headerSubtitle}>Discover delicious places to eat</Text>
+      </View>
+      
       <View style={styles.searchContainer}>
-        <Ionicons
+        <FontAwesome5
           name="search"
-          size={24}
-          color="#888"
+          size={18}
+          color="#6C63FF"
           style={styles.searchIcon}
         />
         <TextInput
           style={styles.searchInput}
           placeholder="Search for restaurants..."
+          placeholderTextColor="#9CA3AF"
           value={searchQuery}
           onChangeText={handleSearch}
         />
       </View>
 
-      {/* Cuisines Filter */}
       <View style={styles.cuisinesContainer}>
-        <Text style={styles.cuisineLabel}>Filter by Cuisine:</Text>
-        <View style={styles.cuisinesList}>
-          {cuisinesList.map((cuisine, index) => (
+        <Text style={styles.cuisineLabel}>Cuisines</Text>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={cuisinesList}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
             <TouchableOpacity
-              key={index}
-              onPress={() => handleCuisineSelect(cuisine)}
+              onPress={() => handleCuisineSelect(item)}
               style={[
                 styles.cuisineItem,
-                selectedCuisine === cuisine && styles.selectedCuisine,
+                selectedCuisine === item && styles.selectedCuisine,
               ]}
             >
               <Text
                 style={[
                   styles.cuisineText,
-                  selectedCuisine === cuisine && styles.selectedCuisineText,
+                  selectedCuisine === item && styles.selectedCuisineText,
                 ]}
               >
-                {cuisine}
+                {item}
               </Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          )}
+          contentContainerStyle={styles.cuisinesList}
+        />
+      </View>
+
+      <View style={styles.resultsContainer}>
+        <Text style={styles.resultsText}>
+          {filteredRestaurants.length} {filteredRestaurants.length === 1 ? 'restaurant' : 'restaurants'} found
+        </Text>
       </View>
 
       <FlatList
@@ -221,6 +264,8 @@ const SearchScreen = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+        ListEmptyComponent={renderEmptyList}
       />
     </View>
   );
@@ -229,138 +274,199 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#EBEBEB",
-
+    backgroundColor: "#F8F9FA",
     padding: 16,
-    marginTop: 20,
+  },
+  header: {
+    marginTop: 40,
+    marginBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#1A1A2E",
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: "#6B7280",
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#F8F9FA",
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#F5F5F5",
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: "#6B7280",
+    fontWeight: "500",
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "white",
-    borderRadius: 30,
+    borderRadius: 16,
     paddingHorizontal: 16,
     marginBottom: 20,
-    elevation: 5,
+    height: 56,
+    elevation: 2,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 2,
   },
   searchIcon: {
-    marginRight: 8,
+    marginRight: 12,
   },
   searchInput: {
     flex: 1,
-    height: 50,
+    height: 56,
     fontSize: 16,
-    color: "#333",
-  },
-  listContainer: {
-    paddingBottom: 16,
-  },
-  imageContainer: {
-    position: "relative",
-    marginBottom: 20,
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    borderRadius: 10,
-    resizeMode: "cover",
-  },
-  textContainer: {
-    position: "absolute",
-    top: 15,
-    left: 15,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 5,
-  },
-  restaurantName: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  locationContainer: {
-    position: "absolute",
-    bottom: 15,
-    left: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 5,
-  },
-  locationText: {
-    color: "#333",
-    fontSize: 16,
-    marginLeft: 5,
-  },
-  locationIcon: {
-    padding: 5,
-  },
-  addIcon: {
-    position: "absolute",
-    bottom: 15,
-    right: 15,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 5,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0,
-    shadowRadius: 4,
+    color: "#1A1A2E",
   },
   cuisinesContainer: {
     marginBottom: 20,
   },
   cuisineLabel: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1A1A2E",
+    marginBottom: 12,
   },
   cuisinesList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginTop: 5,
+    paddingVertical: 4,
   },
   cuisineItem: {
-    marginRight: 10,
-    marginBottom: 10,
-    padding: 10,
-    backgroundColor: "#eee",
-    borderRadius: 20,
+    marginRight: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: "white",
+    borderRadius: 12,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  selectedCuisine: {
+    backgroundColor: "#6C63FF",
+  },
+  cuisineText: {
+    color: "#4B5563",
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  selectedCuisineText: {
+    color: "white",
+  },
+  resultsContainer: {
+    marginBottom: 16,
+  },
+  resultsText: {
+    fontSize: 14,
+    color: "#6B7280",
+    fontWeight: "500",
+  },
+  listContainer: {
+    paddingBottom: 20,
+  },
+  restaurantCard: {
+    backgroundColor: "white",
+    borderRadius: 16,
+    overflow: "hidden",
+    marginBottom: 20,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  selectedCuisine: {
-    backgroundColor: "#FF6347",
+  restaurantImage: {
+    width: "100%",
+    height: 180,
+    resizeMode: "cover",
   },
-  cuisineText: {
-    color: "#333",
-    fontSize: 14,
+  cardOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 180,
+    backgroundColor: "rgba(0,0,0,0.2)",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   },
-  selectedCuisineText: {
+  restaurantInfo: {
+    padding: 16,
+  },
+  nameContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  restaurantName: {
+    color: "#1A1A2E",
+    fontSize: 18,
+    fontWeight: "700",
+    flex: 1,
+  },
+  cuisineTag: {
+    backgroundColor: "#4ECDC4",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  cuisineTagText: {
     color: "white",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  locationText: {
+    color: "#4B5563",
+    fontSize: 14,
+    marginLeft: 8,
+    flex: 1,
+  },
+  viewButton: {
+    backgroundColor: "#FF6B6B",
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  viewButtonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 14,
+    marginRight: 8,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 40,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#4B5563",
+    marginTop: 16,
+  },
+  emptySubText: {
+    fontSize: 14,
+    color: "#9CA3AF",
+    textAlign: "center",
+    marginTop: 8,
   },
 });
 

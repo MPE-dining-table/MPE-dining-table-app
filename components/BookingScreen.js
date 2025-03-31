@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,16 +8,25 @@ import {
   Platform,
   ScrollView,
   Modal,
+  StatusBar,
+  KeyboardAvoidingView,
+  Dimensions,
 } from "react-native";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from "@react-navigation/native";
 import { Calendar } from "react-native-calendars";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, addDays } from "date-fns";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { FontAwesome5 } from "@expo/vector-icons";
+
+const { width } = Dimensions.get("window");
 
 const BookingScreen = ({ route }) => {
+  const navigation = useNavigation();
+  const { restaurant = {} } = route.params;
+  const { booking, isEditing } = route.params || {};
+  const token = useSelector((state) => state.user.token);
+
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showPaxModal, setShowPaxModal] = useState(false);
@@ -28,14 +37,29 @@ const BookingScreen = ({ route }) => {
     pax: route.params?.booking?.bookingSlot.pax || "",
   });
 
-  const navigation = useNavigation();
-  const { restaurant = {} } = route.params;
-  const { booking, isEditing } = route.params || {};
-  const token = useSelector((state) => state.user.token);
+  const getTimes = () => {
+    if (!bookingSlot.dateIn) return [];
+    
+    // Default opening/closing times if not provided by restaurant
+    const openingTime = restaurant.openingTime || 10;
+    const closingTime = restaurant.closingTime || 22;
+    
+    const selectedDate = parseISO(bookingSlot.dateIn.dateString);
+    const beginning = new Date(selectedDate);
+    beginning.setHours(openingTime, 0, 0);
+    const end = new Date(selectedDate);
+    end.setHours(closingTime, 0, 0);
+    const interval = 30; // 30 minutes interval
+    const times = [];
+    for (let i = beginning; i <= end; i.setMinutes(i.getMinutes() + interval)) {
+      times.push(new Date(i));
+    }
+    return times;
+  };
 
   const handleConfirmBooking = async () => {
     if (!bookingSlot.dateIn || !bookingSlot.timeIn || !bookingSlot.pax) {
-      alert("Please complete all required fields: Date, Time, and Pax.");
+      alert("Please complete all required fields: Date, Time, and Number of People.");
       return;
     }
 
@@ -47,6 +71,7 @@ const BookingScreen = ({ route }) => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         alert("Booking updated successfully!");
+        navigation.goBack();
       } else {
         navigation.navigate("ConfirmationScreen", { bookingSlot, restaurant });
       }
@@ -56,160 +81,213 @@ const BookingScreen = ({ route }) => {
     }
   };
 
-  const getTimes = () => {
-    if (!bookingSlot.dateIn) return [];
-    const selectedDate = parseISO(bookingSlot.dateIn.dateString);
-    const beginning = new Date(selectedDate);
-    beginning.setHours(restaurant.openingTime, 0, 0);
-    const end = new Date(selectedDate);
-    end.setHours(restaurant.closingTime, 0, 0);
-    const interval = 30; // 30 minutes interval
-    const times = [];
-    for (let i = beginning; i <= end; i.setMinutes(i.getMinutes() + interval)) {
-      times.push(new Date(i));
-    }
-    return times;
-  };
-
   const times = getTimes();
-  const formattedDate = bookingSlot.dateIn?.dateString || "Select Date";
+  const formattedDate = bookingSlot.dateIn?.dateString 
+    ? format(new Date(bookingSlot.dateIn.dateString), "EEE, MMM d, yyyy")
+    : "Select Date";
+    
   const formattedTime = bookingSlot.timeIn
-    ? format(new Date(bookingSlot.timeIn), "hh:mm a")
+    ? format(new Date(bookingSlot.timeIn), "h:mm a")
     : "Select Time";
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {isEditing ? "Edit Booking" : "New Booking"}
-      </Text>
-      <Text style={styles.restaurantName}>{restaurant.restaurantName}</Text>
-
-      {/* Date, Pax, and Time Selection */}
-      <View style={styles.selectionContainer}>
-        <TouchableOpacity
-          style={[
-            styles.selectionButton,
-            !bookingSlot.dateIn && styles.missingField,
-          ]}
-          onPress={() => setShowDatePicker(true)}
-        >
-          <Text style={styles.selectionButtonText}>📅 {formattedDate}</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.selectionButton,
-            !bookingSlot.pax && styles.missingField,
-          ]}
-          onPress={() => setShowPaxModal(true)}
-        >
-          <Text style={styles.selectionButtonText}>
-            👥{" "}
-            {bookingSlot.pax
-              ? `${bookingSlot.pax} Person${bookingSlot.pax > 1 ? "s" : ""}`
-              : "Select Pax"}
-          </Text>
-        </TouchableOpacity>
-
-        <Modal visible={showPaxModal} transparent={true} animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <ScrollView contentContainerStyle={styles.timeContainer}>
-                {[1, 2, 3, 4, 5].map((pax) => (
-                  <TouchableOpacity
-                    key={`pax-${pax}`}
-                    style={styles.timeButton}
-                    onPress={() => {
-                      setBookingSlot((prev) => ({
-                        ...prev,
-                        pax: pax.toString(),
-                      }));
-                      setShowPaxModal(false);
-                    }}
-                  >
-                    <Text style={styles.timeButtonText}>
-                      {pax} Person{pax > 1 ? "s" : ""}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-                <TouchableOpacity
-                  style={styles.timeButton}
-                  onPress={() => {
-                    setBookingSlot((prev) => ({ ...prev, pax: "5+" }));
-                    setShowPaxModal(false);
-                  }}
-                >
-                  <Text style={styles.timeButtonText}>5+ People</Text>
-                </TouchableOpacity>
-              </ScrollView>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setShowPaxModal(false)}
-              >
-                <Text style={styles.closeButtonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-
-        <TouchableOpacity
-          style={[
-            styles.selectionButton,
-            !bookingSlot.timeIn && styles.missingField,
-          ]}
-          onPress={() => setShowTimePicker(true)}
-        >
-          <Text style={styles.selectionButtonText}>⏰ {formattedTime}</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Special Request Input */}
-      <Text style={styles.label}>Special Request</Text>
-      <TextInput
-        style={styles.input}
-        value={bookingSlot.request}
-        onChangeText={(text) =>
-          setBookingSlot((prev) => ({ ...prev, request: text }))
-        }
-        multiline
-        numberOfLines={4}
-        placeholder="Any special requests?"
-      />
-
-      {/* Confirm and Cancel Buttons */}
-      <TouchableOpacity
-        style={styles.confirmButton}
-        onPress={handleConfirmBooking}
+    <KeyboardAvoidingView 
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <StatusBar barStyle="dark-content" backgroundColor="#F8F9FA" />
+      
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.confirmButtonText}>Confirm Booking</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Text style={styles.cancelText}>Cancel</Text>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <FontAwesome5 name="arrow-left" size={16} color="#1A1A2E" />
+        </TouchableOpacity>
+        
+        <View style={styles.headerSection}>
+          <Text style={styles.title}>
+            {isEditing ? "Edit Reservation" : "Make a Reservation"}
+          </Text>
+          <Text style={styles.restaurantName}>{restaurant.restaurantName}</Text>
+        </View>
+        
+        <View style={styles.formSection}>
+          <Text style={styles.sectionTitle}>Reservation Details</Text>
+          
+          <View style={styles.fieldContainer}>
+            <Text style={styles.fieldLabel}>Date <Text style={styles.requiredStar}>*</Text></Text>
+            <TouchableOpacity
+              style={[
+                styles.selectionButton,
+                !bookingSlot.dateIn && styles.missingField,
+              ]}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <FontAwesome5 name="calendar-alt" size={16} color="#6C63FF" style={styles.fieldIcon} />
+              <Text style={styles.selectionButtonText}>{formattedDate}</Text>
+              <FontAwesome5 name="chevron-down" size={14} color="#6B7280" />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.fieldContainer}>
+            <Text style={styles.fieldLabel}>Time <Text style={styles.requiredStar}>*</Text></Text>
+            <TouchableOpacity
+              style={[
+                styles.selectionButton,
+                !bookingSlot.timeIn && styles.missingField,
+              ]}
+              onPress={() => setShowTimePicker(true)}
+              disabled={!bookingSlot.dateIn}
+            >
+              <FontAwesome5 name="clock" size={16} color="#4ECDC4" style={styles.fieldIcon} />
+              <Text style={[
+                styles.selectionButtonText,
+                !bookingSlot.dateIn && styles.disabledText
+              ]}>
+                {!bookingSlot.dateIn ? "Select date first" : formattedTime}
+              </Text>
+              <FontAwesome5 name="chevron-down" size={14} color="#6B7280" />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.fieldContainer}>
+            <Text style={styles.fieldLabel}>Number of People <Text style={styles.requiredStar}>*</Text></Text>
+            <TouchableOpacity
+              style={[
+                styles.selectionButton,
+                !bookingSlot.pax && styles.missingField,
+              ]}
+              onPress={() => setShowPaxModal(true)}
+            >
+              <FontAwesome5 name="users" size={16} color="#FF6B6B" style={styles.fieldIcon} />
+              <Text style={styles.selectionButtonText}>
+                {bookingSlot.pax
+                  ? `${bookingSlot.pax} ${bookingSlot.pax === "1" ? "Person" : "People"}`
+                  : "Select number of people"}
+              </Text>
+              <FontAwesome5 name="chevron-down" size={14} color="#6B7280" />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.fieldContainer}>
+            <Text style={styles.fieldLabel}>Special Requests</Text>
+            <TextInput
+              style={styles.input}
+              value={bookingSlot.request}
+              onChangeText={(text) =>
+                setBookingSlot((prev) => ({ ...prev, request: text }))
+              }
+              multiline
+              numberOfLines={4}
+              placeholder="Any dietary requirements or special occasions?"
+              placeholderTextColor="#9CA3AF"
+            />
+          </View>
+        </View>
+        
+        <View style={styles.summarySection}>
+          <Text style={styles.sectionTitle}>Reservation Summary</Text>
+          
+          <View style={styles.summaryCard}>
+            {bookingSlot.dateIn && (
+              <View style={styles.summaryItem}>
+                <FontAwesome5 name="calendar-alt" size={16} color="#6C63FF" />
+                <Text style={styles.summaryText}>{formattedDate}</Text>
+              </View>
+            )}
+            
+            {bookingSlot.timeIn && (
+              <View style={styles.summaryItem}>
+                <FontAwesome5 name="clock" size={16} color="#4ECDC4" />
+                <Text style={styles.summaryText}>{formattedTime}</Text>
+              </View>
+            )}
+            
+            {bookingSlot.pax && (
+              <View style={styles.summaryItem}>
+                <FontAwesome5 name="users" size={16} color="#FF6B6B" />
+                <Text style={styles.summaryText}>
+                  {bookingSlot.pax} {bookingSlot.pax === "1" ? "Person" : "People"}
+                </Text>
+              </View>
+            )}
+            
+            {bookingSlot.request && (
+              <View style={styles.summaryItem}>
+                <FontAwesome5 name="comment-alt" size={16} color="#6B7280" />
+                <Text style={styles.summaryText} numberOfLines={2}>
+                  {bookingSlot.request}
+                </Text>
+              </View>
+            )}
+            
+            {(!bookingSlot.dateIn || !bookingSlot.timeIn || !bookingSlot.pax) && (
+              <Text style={styles.incompleteText}>
+                Please complete all required fields to see your reservation summary.
+              </Text>
+            )}
+          </View>
+        </View>
+        
+        <View style={styles.actionSection}>
+          <TouchableOpacity
+            style={styles.confirmButton}
+            onPress={handleConfirmBooking}
+          >
+            <Text style={styles.confirmButtonText}>
+              {isEditing ? "Update Reservation" : "Confirm Reservation"}
+            </Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.cancelButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.cancelButtonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
 
       {/* Date Picker Modal */}
       <Modal visible={showDatePicker} transparent={true} animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Date</Text>
+              <TouchableOpacity onPress={() => setShowDatePicker(false)}>
+                <FontAwesome5 name="times" size={20} color="#1A1A2E" />
+              </TouchableOpacity>
+            </View>
+            
             <Calendar
               minDate={new Date()}
+              maxDate={addDays(new Date(), 30)}
               onDayPress={(day) => {
-                setBookingSlot((prev) => ({ ...prev, dateIn: day }));
+                setBookingSlot((prev) => ({ ...prev, dateIn: day, timeIn: null }));
                 setShowDatePicker(false);
               }}
               markedDates={{
                 [bookingSlot.dateIn?.dateString]: {
                   selected: true,
-                  selectedColor: "#FF6700",
+                  selectedColor: "#6C63FF",
                 },
               }}
+              theme={{
+                todayTextColor: '#FF6B6B',
+                selectedDayBackgroundColor: '#6C63FF',
+                selectedDayTextColor: '#FFFFFF',
+                arrowColor: '#6C63FF',
+                monthTextColor: '#1A1A2E',
+                textMonthFontWeight: 'bold',
+                textDayFontSize: 14,
+                textMonthFontSize: 16,
+              }}
             />
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowDatePicker(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -218,125 +296,295 @@ const BookingScreen = ({ route }) => {
       <Modal visible={showTimePicker} transparent={true} animationType="slide">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <ScrollView contentContainerStyle={styles.timeContainer}>
-              {times.map((time, i) => (
-                <TouchableOpacity
-                  key={`time-${i}`}
-                  style={styles.timeButton}
-                  onPress={() => {
-                    setBookingSlot((prev) => ({ ...prev, timeIn: time }));
-                    setShowTimePicker(false);
-                  }}
-                >
-                  <Text style={styles.timeButtonText}>
-                    {format(time, "hh:mm a")}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowTimePicker(false)}
-            >
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Time</Text>
+              <TouchableOpacity onPress={() => setShowTimePicker(false)}>
+                <FontAwesome5 name="times" size={20} color="#1A1A2E" />
+              </TouchableOpacity>
+            </View>
+            
+            {times.length > 0 ? (
+              <ScrollView style={styles.timeScrollView}>
+                <View style={styles.timeContainer}>
+                  {times.map((time, i) => (
+                    <TouchableOpacity
+                      key={`time-${i}`}
+                      style={styles.timeButton}
+                      onPress={() => {
+                        setBookingSlot((prev) => ({ ...prev, timeIn: time }));
+                        setShowTimePicker(false);
+                      }}
+                    >
+                      <Text style={styles.timeButtonText}>
+                        {format(time, "h:mm a")}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            ) : (
+              <Text style={styles.noTimesText}>
+                Please select a date first to see available times.
+              </Text>
+            )}
           </View>
         </View>
       </Modal>
-    </View>
+
+      {/* Pax Modal */}
+      <Modal visible={showPaxModal} transparent={true} animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Number of People</Text>
+              <TouchableOpacity onPress={() => setShowPaxModal(false)}>
+                <FontAwesome5 name="times" size={20} color="#1A1A2E" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.paxContainer}>
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((pax) => (
+                <TouchableOpacity
+                  key={`pax-${pax}`}
+                  style={styles.paxButton}
+                  onPress={() => {
+                    setBookingSlot((prev) => ({
+                      ...prev,
+                      pax: pax.toString(),
+                    }));
+                    setShowPaxModal(false);
+                  }}
+                >
+                  <Text style={styles.paxButtonText}>{pax}</Text>
+                </TouchableOpacity>
+              ))}
+              
+              <TouchableOpacity
+                style={[styles.paxButton, styles.largeGroupButton]}
+                onPress={() => {
+                  setBookingSlot((prev) => ({ ...prev, pax: "9+" }));
+                  setShowPaxModal(false);
+                }}
+              >
+                <Text style={styles.paxButtonText}>9+</Text>
+              </TouchableOpacity>
+            </View>
+            
+            <Text style={styles.paxNote}>
+              For groups larger than 8, please call the restaurant directly for availability.
+            </Text>
+          </View>
+        </View>
+      </Modal>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#F8F9FA",
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
     padding: 20,
+    paddingTop: 60,
+    paddingBottom: 40,
+  },
+  backButton: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    zIndex: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+  },
+  headerSection: {
+    marginBottom: 30,
+    alignItems: "center",
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: "700",
+    color: "#1A1A2E",
+    marginBottom: 8,
     textAlign: "center",
-    marginBottom: 10,
-    color: "#333",
   },
   restaurantName: {
     fontSize: 18,
+    color: "#6C63FF",
+    fontWeight: "600",
     textAlign: "center",
-    marginBottom: 20,
-    color: "#3A6EA5",
   },
-  selectionContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  formSection: {
+    marginBottom: 30,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1A1A2E",
+    marginBottom: 16,
+  },
+  fieldContainer: {
     marginBottom: 20,
+  },
+  fieldLabel: {
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#4B5563",
+    marginBottom: 8,
+  },
+  requiredStar: {
+    color: "#FF6B6B",
   },
   selectionButton: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 10,
-    width: "30%",
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    borderRadius: 12,
+    elevation: 2,
     shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
+    shadowRadius: 2,
+  },
+  fieldIcon: {
+    marginRight: 12,
   },
   selectionButtonText: {
     fontSize: 16,
-    color: "#333",
+    color: "#1A1A2E",
+    flex: 1,
+  },
+  disabledText: {
+    color: "#9CA3AF",
   },
   missingField: {
-    borderColor: "red",
-    borderWidth: 2,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-    color: "#333",
+    borderWidth: 1,
+    borderColor: "#FF6B6B",
   },
   input: {
-    height: 100,
-    borderWidth: 1,
-    borderColor: "#FF6700",
-    borderRadius: 10,
-    padding: 10,
-    fontSize: 16,
-    backgroundColor: "#fff",
-    marginBottom: 20,
+    backgroundColor: "#FFFFFF",
+    padding: 16,
+    borderRadius: 12,
+    height: 120,
     textAlignVertical: "top",
+    fontSize: 16,
+    color: "#1A1A2E",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  summarySection: {
+    marginBottom: 30,
+  },
+  summaryCard: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    padding: 20,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  summaryItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  summaryText: {
+    fontSize: 16,
+    color: "#4B5563",
+    marginLeft: 12,
+    flex: 1,
+  },
+  incompleteText: {
+    fontSize: 14,
+    color: "#9CA3AF",
+    fontStyle: "italic",
+    textAlign: "center",
+    padding: 10,
+  },
+  actionSection: {
+    marginBottom: 20,
   },
   confirmButton: {
-    backgroundColor: "#FF6700",
-    padding: 15,
-    borderRadius: 10,
+    backgroundColor: "#FF6B6B",
+    borderRadius: 12,
+    paddingVertical: 16,
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
   },
   confirmButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  cancelText: {
-    color: "red",
-    textAlign: "center",
+    color: "#FFFFFF",
+    fontWeight: "600",
     fontSize: 16,
-    fontWeight: "bold",
+  },
+  cancelButton: {
+    borderRadius: 12,
+    paddingVertical: 16,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  cancelButtonText: {
+    color: "#4B5563",
+    fontWeight: "600",
+    fontSize: 16,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
+    padding: 20,
   },
   modalContent: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    width: "100%",
+    maxHeight: "80%",
     padding: 20,
-    width: "90%",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#1A1A2E",
+  },
+  timeScrollView: {
+    maxHeight: 300,
   },
   timeContainer: {
     flexDirection: "row",
@@ -344,48 +592,53 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   timeButton: {
-    backgroundColor: "#FF6700",
-    padding: 10,
+    backgroundColor: "#F1F5F9",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 10,
-    marginBottom: 10,
+    marginBottom: 12,
     width: "48%",
     alignItems: "center",
   },
   timeButtonText: {
-    color: "#fff",
+    color: "#1A1A2E",
     fontSize: 16,
+    fontWeight: "500",
   },
-  closeButton: {
-    marginTop: 10,
+  noTimesText: {
+    fontSize: 16,
+    color: "#6B7280",
+    textAlign: "center",
+    padding: 20,
+  },
+  paxContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+  paxButton: {
+    backgroundColor: "#F1F5F9",
+    width: "23%",
+    aspectRatio: 1,
+    justifyContent: "center",
     alignItems: "center",
+    borderRadius: 12,
+    marginBottom: 12,
   },
-  closeButtonText: {
-    color: "#FF6700",
-    fontSize: 16,
-    fontWeight: "bold",
+  largeGroupButton: {
+    backgroundColor: "#FFE4E6",
   },
-});
-
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "#FF6700",
-    borderRadius: 10,
-    color: "#333",
-    paddingRight: 30,
+  paxButtonText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1A1A2E",
   },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#FF6700",
-    borderRadius: 10,
-    color: "#333",
-    paddingRight: 30,
+  paxNote: {
+    fontSize: 14,
+    color: "#6B7280",
+    textAlign: "center",
+    fontStyle: "italic",
   },
 });
 
